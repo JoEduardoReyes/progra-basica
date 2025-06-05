@@ -4,7 +4,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/JoEduardoReyes/progra-basica)
 ![GitHub](https://img.shields.io/github/license/JoEduardoReyes/progra-basica)
 ![Platzi Badge](https://img.shields.io/badge/Platzi-Student-blue)
-![Progress](https://img.shields.io/badge/Progress-100%25-success)
+![Progress](https://img.shields.io/badge/Progress-0%25-success)
 
 ---
 
