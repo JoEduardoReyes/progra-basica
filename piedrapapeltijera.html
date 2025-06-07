@@ -5,17 +5,55 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Document</title>
 		<script>
+			function aleatorio(min, max) {
+				return Math.floor(Math.random() * (max - min + 1) + min);
+			}
 			// 1 es piedra, 2 es papel, 3 es tijera
 			let jugador = 0;
-			let pc = 0;
+			let pc = aleatorio(1, 3);
 			jugador = prompt("Elige: 1 para piedra, 2 para papel, 3 para tijera");
-			// alert("Elegiste " + jugador);
-			if (jugador == 1) {
-				alert("Elegiste piedra");
-			} else if (jugador == 2) {
-				alert("Elegiste papel");
-			} else if (jugador == 3) {
-				alert("Elegiste tijera");
+			// Mostrar elección del jugador
+			switch (parseInt(jugador)) {
+				case 1:
+					alert("Elegiste piedra 🪨");
+					break;
+				case 2:
+					alert("Elegiste papel 🧻");
+					break;
+				case 3:
+					alert("Elegiste tijera ✂️");
+					break;
+				default:
+					alert("Opción no válida");
+					break;
+			}
+
+			// Mostrar elección de la PC
+			switch (pc) {
+				case 1:
+					alert("PC elige piedra 🪨");
+					break;
+				case 2:
+					alert("PC elige papel 🧻");
+					break;
+				case 3:
+					alert("PC elige tijera ✂️");
+					break;
+			}
+
+			// Combate
+			jugador = parseInt(jugador); // Convertir a número para evitar problemas
+
+			if (pc == jugador) {
+				alert("Empate 😲");
+			} else if (
+				(jugador == 1 && pc == 3) ||
+				(jugador == 2 && pc == 1) ||
+				(jugador == 3 && pc == 2)
+			) {
+				alert("Ganaste 🎊");
+			} else {
+				alert("Perdiste 🥲");
 			}
 		</script>
 	</head>
