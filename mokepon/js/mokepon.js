@@ -23,6 +23,9 @@ function aleatorio(min, max) {
 }
 
 function iniciarJuego() {
+	// Ocultar secciones al inicio del juego
+	ocultarSeccionesIniciales();
+
 	let botonMascotaJugador = document.getElementById("boton-mascota");
 	botonMascotaJugador.addEventListener("click", seleccionarMascotaJugador);
 
@@ -36,6 +39,26 @@ function iniciarJuego() {
 	// Agregar event listener al botón de reiniciar
 	let botonReiniciar = document.getElementById("boton-reiniciar");
 	botonReiniciar.addEventListener("click", reiniciarJuego);
+}
+
+function ocultarSeccionesIniciales() {
+	// Ocultar secciones que no se necesitan al inicio
+	document.getElementById("seleccionar-ataque").style.display = "none";
+	document.getElementById("mensajes").style.display = "none";
+	document.getElementById("reiniciar").style.display = "none";
+
+	// Asegurar que la sección de seleccionar mascota esté visible
+	document.getElementById("seleccionar-mascota").style.display = "block";
+}
+
+function mostrarSeccionesBatalla() {
+	// Ocultar la sección de seleccionar mascota
+	document.getElementById("seleccionar-mascota").style.display = "none";
+
+	// Mostrar las secciones de batalla
+	document.getElementById("seleccionar-ataque").style.display = "block";
+	document.getElementById("mensajes").style.display = "block";
+	document.getElementById("reiniciar").style.display = "block";
 }
 
 function seleccionarMascotaJugador() {
@@ -60,6 +83,9 @@ function seleccionarMascotaJugador() {
 
 	document.getElementById("mascota-jugador").innerHTML = mascotaSeleccionada;
 	seleccionarMascotaEnemigo();
+
+	// Cambiar a la fase de batalla
+	mostrarSeccionesBatalla();
 }
 
 function seleccionarMascotaEnemigo() {
@@ -115,7 +141,7 @@ function mostrarResultado(resultado) {
 
 	switch (resultado) {
 		case RESULTADOS.EMPATE:
-			mensaje.innerHTML = "¡EMPATE! Ambos atacaron con el mismo tipo.";
+			mensaje.innerHTML = "¡EMPATE!";
 			break;
 		case RESULTADOS.VICTORIA:
 			mensaje.innerHTML = `Tu mascota atacó con ${ataqueJugador}, tu enemigo atacó con ${ataqueEnemigo}, ¡GANASTE!`;
@@ -189,4 +215,6 @@ function reiniciarJuego() {
 	// Resetear variables globales
 	ataqueJugador = null;
 	ataqueEnemigo = null;
+
+	ocultarSeccionesIniciales();
 }
