@@ -4,17 +4,18 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Mokepon</title>
-		<script src="./js/mokepon.js"></script>
-		<link rel="stylesheet" href="mokepon.css" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap"
 			rel="stylesheet"
 		/>
+		<link rel="stylesheet" href="mokepon.css" />
+		<script src="./js/mokepon.js"></script>
 	</head>
 	<body>
 		<h1 id="titulo">Mokepon 🔥🌱💧</h1>
+
 		<section id="seleccionar-mascota">
 			<h2>Elige a tu mascota</h2>
 			<input type="radio" name="mascota" id="hipodoge" />
@@ -25,6 +26,7 @@
 			<label for="ratigueya">Ratigueya</label>
 			<button id="boton-mascota">Seleccionar</button>
 		</section>
+
 		<section id="seleccionar-ataque">
 			<h2>Elige tu ataque</h2>
 			<p>
@@ -41,11 +43,21 @@
 				<button id="boton-tierra">Tierra 🌱</button>
 			</p>
 		</section>
+
 		<section id="mensajes">
 			<div id="resultado"></div>
 		</section>
+
 		<section id="reiniciar">
 			<button id="boton-reiniciar">Reiniciar</button>
+		</section>
+
+		<!-- Nueva sección para el resultado final -->
+		<section id="resultado-final">
+			<div class="emoji" id="emoji-resultado"></div>
+			<h2 id="titulo-resultado"></h2>
+			<p id="mensaje-resultado"></p>
+			<button id="boton-nueva-partida">Nueva Partida</button>
 		</section>
 	</body>
 </html>

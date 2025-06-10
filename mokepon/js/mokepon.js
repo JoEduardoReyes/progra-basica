@@ -36,9 +36,12 @@ function iniciarJuego() {
 	let botonTierra = document.getElementById("boton-tierra");
 	botonTierra.addEventListener("click", () => realizarAtaque(ATAQUES.TIERRA));
 
-	// Agregar event listener al botón de reiniciar
+	// Agregar event listener a los botones de reiniciar
 	let botonReiniciar = document.getElementById("boton-reiniciar");
 	botonReiniciar.addEventListener("click", reiniciarJuego);
+
+	let botonNuevaPartida = document.getElementById("boton-nueva-partida");
+	botonNuevaPartida.addEventListener("click", reiniciarJuego);
 }
 
 function ocultarSeccionesIniciales() {
@@ -46,6 +49,7 @@ function ocultarSeccionesIniciales() {
 	document.getElementById("seleccionar-ataque").style.display = "none";
 	document.getElementById("mensajes").style.display = "none";
 	document.getElementById("reiniciar").style.display = "none";
+	document.getElementById("resultado-final").style.display = "none";
 
 	// Asegurar que la sección de seleccionar mascota esté visible
 	document.getElementById("seleccionar-mascota").style.display = "block";
@@ -54,11 +58,41 @@ function ocultarSeccionesIniciales() {
 function mostrarSeccionesBatalla() {
 	// Ocultar la sección de seleccionar mascota
 	document.getElementById("seleccionar-mascota").style.display = "none";
+	document.getElementById("resultado-final").style.display = "none";
 
 	// Mostrar las secciones de batalla
 	document.getElementById("seleccionar-ataque").style.display = "block";
 	document.getElementById("mensajes").style.display = "block";
 	document.getElementById("reiniciar").style.display = "block";
+}
+
+function mostrarResultadoFinal(esVictoria) {
+	// Ocultar todas las secciones de batalla
+	document.getElementById("seleccionar-ataque").style.display = "none";
+	document.getElementById("mensajes").style.display = "none";
+	document.getElementById("reiniciar").style.display = "none";
+
+	// Mostrar la sección de resultado final
+	const seccionResultado = document.getElementById("resultado-final");
+	const emojiResultado = document.getElementById("emoji-resultado");
+	const tituloResultado = document.getElementById("titulo-resultado");
+	const mensajeResultado = document.getElementById("mensaje-resultado");
+
+	if (esVictoria) {
+		seccionResultado.className = "victoria";
+		emojiResultado.textContent = "🏆";
+		tituloResultado.textContent = "¡FELICIDADES!";
+		mensajeResultado.textContent =
+			"¡HAS GANADO LA BATALLA! ERES EL CAMPEÓN MOKEPON";
+	} else {
+		seccionResultado.className = "derrota";
+		emojiResultado.textContent = "💀";
+		tituloResultado.textContent = "GAME OVER";
+		mensajeResultado.textContent =
+			"¡HAS SIDO DERROTADO! Mejor suerte la próxima vez...";
+	}
+
+	seccionResultado.style.display = "block";
 }
 
 function seleccionarMascotaJugador() {
@@ -135,8 +169,6 @@ function determinarResultado(ataqueJugador, ataqueEnemigo) {
 		: RESULTADOS.DERROTA;
 }
 
-// Reemplaza la función mostrarResultado en tu archivo mokepon.js
-
 function mostrarResultado(resultado) {
 	let sectionMensajes = document.getElementById("resultado");
 	let mensaje = document.createElement("p");
@@ -171,9 +203,7 @@ function actualizarVidas(resultado) {
 			spanVidasEnemigo.innerHTML = vidasEnemigo - 1;
 			// Verificar si el juego terminó
 			if (vidasEnemigo - 1 <= 0) {
-				mostrarResultadoFinal(
-					"¡FELICIDADES! 🎉\n¡HAS GANADO LA BATALLA!\n🏆 ERES EL CAMPEÓN MOKEPON 🏆"
-				);
+				setTimeout(() => mostrarResultadoFinal(true), 500);
 			}
 			break;
 		case RESULTADOS.DERROTA:
@@ -182,20 +212,10 @@ function actualizarVidas(resultado) {
 			spanVidasJugador.innerHTML = vidasJugador - 1;
 			// Verificar si el juego terminó
 			if (vidasJugador - 1 <= 0) {
-				mostrarResultadoFinal(
-					"💀 GAME OVER 💀\n¡HAS SIDO DERROTADO!\n😢 Mejor suerte la próxima vez..."
-				);
+				setTimeout(() => mostrarResultadoFinal(false), 500);
 			}
 			break;
 	}
-}
-
-function mostrarResultadoFinal(mensaje) {
-	// Usar setTimeout para que el DOM se actualice antes del alert
-	setTimeout(() => {
-		alert(mensaje);
-		reiniciarJuego();
-	}, 100);
 }
 
 function reiniciarJuego() {
