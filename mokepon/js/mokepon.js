@@ -32,6 +32,10 @@ function iniciarJuego() {
 	botonAgua.addEventListener("click", () => realizarAtaque(ATAQUES.AGUA));
 	let botonTierra = document.getElementById("boton-tierra");
 	botonTierra.addEventListener("click", () => realizarAtaque(ATAQUES.TIERRA));
+
+	// Agregar event listener al botón de reiniciar
+	let botonReiniciar = document.getElementById("boton-reiniciar");
+	botonReiniciar.addEventListener("click", reiniciarJuego);
 }
 
 function seleccionarMascotaJugador() {
