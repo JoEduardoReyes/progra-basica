@@ -136,11 +136,53 @@ function actualizarVidas(resultado) {
 			// Si el jugador gana, el enemigo pierde una vida
 			let vidasEnemigo = parseInt(spanVidasEnemigo.innerHTML);
 			spanVidasEnemigo.innerHTML = vidasEnemigo - 1;
+			// Verificar si el juego terminó
+			if (vidasEnemigo - 1 <= 0) {
+				mostrarResultadoFinal(
+					"¡FELICIDADES! 🎉\n¡HAS GANADO LA BATALLA!\n🏆 ERES EL CAMPEÓN MOKEPON 🏆"
+				);
+			}
 			break;
 		case RESULTADOS.DERROTA:
 			// Si el jugador pierde, el jugador pierde una vida
 			let vidasJugador = parseInt(spanVidasJugador.innerHTML);
 			spanVidasJugador.innerHTML = vidasJugador - 1;
+			// Verificar si el juego terminó
+			if (vidasJugador - 1 <= 0) {
+				mostrarResultadoFinal(
+					"💀 GAME OVER 💀\n¡HAS SIDO DERROTADO!\n😢 Mejor suerte la próxima vez..."
+				);
+			}
 			break;
 	}
+}
+
+function mostrarResultadoFinal(mensaje) {
+	// Usar setTimeout para que el DOM se actualice antes del alert
+	setTimeout(() => {
+		alert(mensaje);
+		reiniciarJuego();
+	}, 100);
+}
+
+function reiniciarJuego() {
+	// Reiniciar vidas
+	document.getElementById("vidas-jugador").innerHTML = "3";
+	document.getElementById("vidas-enemigo").innerHTML = "3";
+
+	// Limpiar mensajes de batalla
+	document.getElementById("resultado").innerHTML = "";
+
+	// Limpiar selección de mascotas
+	document.getElementById("mascota-jugador").innerHTML = "";
+	document.getElementById("mascota-enemigo").innerHTML = "";
+
+	// Desmarcar radio buttons
+	document.getElementById("hipodoge").checked = false;
+	document.getElementById("capipepo").checked = false;
+	document.getElementById("ratigueya").checked = false;
+
+	// Resetear variables globales
+	ataqueJugador = null;
+	ataqueEnemigo = null;
 }
