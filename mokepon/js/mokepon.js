@@ -25,5 +25,6 @@ function seleccionarMascotaJugador() {
 		return; // Salir de la función si no hay selección
 	}
 
-	alert("Seleccionaste a " + mascotaSeleccionada);
+	let spanMascotaJugador = document.getElementById("mascota-jugador");
+	spanMascotaJugador.innerHTML = mascotaSeleccionada;
 }
