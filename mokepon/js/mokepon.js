@@ -74,3 +74,14 @@ function ataqueTierra() {
 	ataqueJugador = "Tierra";
 	ataqueAleatorioEnemigo();
 }
+function ataqueAleatorioEnemigo() {
+	let ataqueAleatorio = aleatorio(1, 3);
+
+	if (ataqueAleatorio == 1) {
+		ataqueEnemigo = "Fuego";
+	} else if (ataqueAleatorio == 2) {
+		ataqueEnemigo = "Agua";
+	} else {
+		ataqueEnemigo = "Tierra";
+	}
+}
