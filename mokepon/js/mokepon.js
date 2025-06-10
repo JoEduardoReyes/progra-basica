@@ -135,6 +135,8 @@ function determinarResultado(ataqueJugador, ataqueEnemigo) {
 		: RESULTADOS.DERROTA;
 }
 
+// Reemplaza la función mostrarResultado en tu archivo mokepon.js
+
 function mostrarResultado(resultado) {
 	let sectionMensajes = document.getElementById("resultado");
 	let mensaje = document.createElement("p");
@@ -151,7 +153,8 @@ function mostrarResultado(resultado) {
 			break;
 	}
 
-	sectionMensajes.appendChild(mensaje);
+	// Insertar el nuevo mensaje al principio (arriba) en lugar de al final
+	sectionMensajes.insertBefore(mensaje, sectionMensajes.firstChild);
 }
 
 function actualizarVidas(resultado) {
