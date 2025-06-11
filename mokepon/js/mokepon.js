@@ -1,6 +1,6 @@
-// OPTIMIZACIÓN: Usar let/const apropiadamente y evitar variables globales innecesarias
-let ataqueJugador;
-let ataqueEnemigo;
+// Variables para almacenar mascotas seleccionadas
+let mascotaJugadorSeleccionada = null;
+let mascotaEnemigoSeleccionada = null;
 
 // OPTIMIZACIÓN: Configuración centralizada para facilitar mantenimiento
 const CONFIG = {
@@ -15,11 +15,21 @@ const ATAQUES = {
 	TIERRA: "Tierra",
 };
 
-// OPTIMIZACIÓN: Clase Mascota para encapsular datos y comportamientos
+// OPTIMIZACIÓN: Estructura para ataques individuales con emoji e id
+class Ataque {
+	constructor(nombre, emoji, id) {
+		this.nombre = nombre;
+		this.emoji = emoji;
+		this.id = id;
+	}
+}
+
+// OPTIMIZACIÓN: Clase Mascota para encapsular datos, comportamientos y ataques
 class Mascota {
-	constructor(nombre, id) {
+	constructor(nombre, id, ataques = []) {
 		this.nombre = nombre;
 		this.id = id;
+		this.ataques = ataques; // Array de objetos Ataque
 	}
 
 	// MÉTODO: Obtener el elemento DOM del radio button
@@ -37,17 +47,51 @@ class Mascota {
 		this.getInputElement().checked = false;
 	}
 
+	// MÉTODO: Obtener un ataque aleatorio de esta mascota
+	obtenerAtaqueAleatorio() {
+		if (this.ataques.length === 0) {
+			// Fallback si no tiene ataques definidos
+			return ATAQUES.FUEGO;
+		}
+		const indiceAleatorio = aleatorio(0, this.ataques.length - 1);
+		return this.ataques[indiceAleatorio].nombre;
+	}
+
+	// MÉTODO: Verificar si tiene un ataque específico
+	tieneAtaque(nombreAtaque) {
+		return this.ataques.some((ataque) => ataque.nombre === nombreAtaque);
+	}
+
 	// MÉTODO: Para debugging o logging
 	toString() {
-		return `Mascota: ${this.nombre} (ID: ${this.id})`;
+		const ataquesList = this.ataques.map((ataque) => ataque.nombre).join(", ");
+		return `Mascota: ${this.nombre} (ID: ${this.id}) - Ataques: [${ataquesList}]`;
 	}
 }
 
-// OPTIMIZACIÓN: Instancias de mascotas usando la clase
+// OPTIMIZACIÓN: Instancias de mascotas con sus ataques específicos definidos en el constructor
 const MASCOTAS_DATA = {
-	HIPODOGE: new Mascota("Hipodoge", "hipodoge"),
-	CAPIPEPO: new Mascota("Capipepo", "capipepo"),
-	RATIGUEYA: new Mascota("Ratigueya", "ratigueya"),
+	HIPODOGE: new Mascota("Hipodoge", "hipodoge", [
+		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
+		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
+		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
+		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
+		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+	]),
+	CAPIPEPO: new Mascota("Capipepo", "capipepo", [
+		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
+		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
+	]),
+	RATIGUEYA: new Mascota("Ratigueya", "ratigueya", [
+		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
+		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
+		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
+		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
+		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+	]),
 };
 
 // Array de nombres para mantener compatibilidad con el resto del código
@@ -90,11 +134,6 @@ function cachearElementos() {
 	elementos.vidasJugador = document.getElementById("vidas-jugador");
 	elementos.vidasEnemigo = document.getElementById("vidas-enemigo");
 	elementos.resultado = document.getElementById("resultado");
-
-	// Radio buttons de mascotas - Ya no necesarios gracias a la clase Mascota
-	// elementos.inputHipodoge = document.getElementById("hipodoge");
-	// elementos.inputCapipepo = document.getElementById("capipepo");
-	// elementos.inputRatigueya = document.getElementById("ratigueya");
 }
 
 function iniciarJuego() {
@@ -203,42 +242,36 @@ function mostrarResultadoFinal(esVictoria) {
 function seleccionarMascotaJugador() {
 	// OPTIMIZACIÓN: Usar los métodos de la clase para verificar selección
 	const mascotasDisponibles = Object.values(MASCOTAS_DATA);
-	const mascotaSeleccionada = mascotasDisponibles.find((mascota) =>
+	mascotaJugadorSeleccionada = mascotasDisponibles.find((mascota) =>
 		mascota.estaSeleccionada()
 	);
 
-	if (!mascotaSeleccionada) {
+	if (!mascotaJugadorSeleccionada) {
 		alert("Debes seleccionar una mascota");
 		return;
 	}
 
 	// OPTIMIZACIÓN: Usar la propiedad nombre de la instancia
-	elementos.mascotaJugador.innerHTML = mascotaSeleccionada.nombre;
+	elementos.mascotaJugador.innerHTML = mascotaJugadorSeleccionada.nombre;
 	seleccionarMascotaEnemigo();
 	mostrarSeccionesBatalla();
 }
 
 function seleccionarMascotaEnemigo() {
-	const indiceAleatorio = aleatorio(0, MASCOTAS.length - 1);
-	const mascotaEnemiga = MASCOTAS[indiceAleatorio];
-	elementos.mascotaEnemigo.innerHTML = mascotaEnemiga;
+	const mascotasDisponibles = Object.values(MASCOTAS_DATA);
+	const indiceAleatorio = aleatorio(0, mascotasDisponibles.length - 1);
+	mascotaEnemigoSeleccionada = mascotasDisponibles[indiceAleatorio];
+	elementos.mascotaEnemigo.innerHTML = mascotaEnemigoSeleccionada.nombre;
 }
 
 // Función unificada para manejar ataques
 function realizarAtaque(tipoAtaque) {
-	ataqueJugador = tipoAtaque;
-	ataqueEnemigo = generarAtaqueEnemigo();
+	const ataqueJugador = tipoAtaque;
+	const ataqueEnemigo = mascotaEnemigoSeleccionada.obtenerAtaqueAleatorio();
 
 	const resultado = determinarResultado(ataqueJugador, ataqueEnemigo);
-	mostrarResultado(resultado);
+	mostrarResultado(resultado, ataqueJugador, ataqueEnemigo);
 	actualizarVidas(resultado);
-}
-
-// OPTIMIZACIÓN: Función más concisa usando array de ataques
-function generarAtaqueEnemigo() {
-	const ataques = [ATAQUES.FUEGO, ATAQUES.AGUA, ATAQUES.TIERRA];
-	const indiceAleatorio = aleatorio(0, ataques.length - 1);
-	return ataques[indiceAleatorio];
 }
 
 // OPTIMIZACIÓN: Map para reglas de combate más escalable
@@ -260,7 +293,7 @@ function determinarResultado(ataqueJugador, ataqueEnemigo) {
 }
 
 // OPTIMIZACIÓN: Mensajes más estructurados
-function mostrarResultado(resultado) {
+function mostrarResultado(resultado, ataqueJugador, ataqueEnemigo) {
 	const mensaje = document.createElement("p");
 
 	const mensajes = {
@@ -326,8 +359,8 @@ function reiniciarJuego() {
 	});
 
 	// Resetear variables globales
-	ataqueJugador = null;
-	ataqueEnemigo = null;
+	mascotaJugadorSeleccionada = null;
+	mascotaEnemigoSeleccionada = null;
 
 	ocultarSeccionesIniciales();
 }
