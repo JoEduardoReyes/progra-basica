@@ -15,13 +15,42 @@ const ATAQUES = {
 	TIERRA: "Tierra",
 };
 
-// OPTIMIZACIÓN: Datos de mascotas más estructurados para futuras expansiones
+// OPTIMIZACIÓN: Clase Mascota para encapsular datos y comportamientos
+class Mascota {
+	constructor(nombre, id) {
+		this.nombre = nombre;
+		this.id = id;
+	}
+
+	// MÉTODO: Obtener el elemento DOM del radio button
+	getInputElement() {
+		return document.getElementById(this.id);
+	}
+
+	// MÉTODO: Verificar si esta mascota está seleccionada
+	estaSeleccionada() {
+		return this.getInputElement().checked;
+	}
+
+	// MÉTODO: Deseleccionar esta mascota
+	deseleccionar() {
+		this.getInputElement().checked = false;
+	}
+
+	// MÉTODO: Para debugging o logging
+	toString() {
+		return `Mascota: ${this.nombre} (ID: ${this.id})`;
+	}
+}
+
+// OPTIMIZACIÓN: Instancias de mascotas usando la clase
 const MASCOTAS_DATA = {
-	HIPODOGE: { nombre: "Hipodoge", id: "hipodoge" },
-	CAPIPEPO: { nombre: "Capipepo", id: "capipepo" },
-	RATIGUEYA: { nombre: "Ratigueya", id: "ratigueya" },
+	HIPODOGE: new Mascota("Hipodoge", "hipodoge"),
+	CAPIPEPO: new Mascota("Capipepo", "capipepo"),
+	RATIGUEYA: new Mascota("Ratigueya", "ratigueya"),
 };
 
+// Array de nombres para mantener compatibilidad con el resto del código
 const MASCOTAS = Object.values(MASCOTAS_DATA).map((mascota) => mascota.nombre);
 
 const RESULTADOS = {
@@ -62,10 +91,10 @@ function cachearElementos() {
 	elementos.vidasEnemigo = document.getElementById("vidas-enemigo");
 	elementos.resultado = document.getElementById("resultado");
 
-	// Radio buttons de mascotas
-	elementos.inputHipodoge = document.getElementById("hipodoge");
-	elementos.inputCapipepo = document.getElementById("capipepo");
-	elementos.inputRatigueya = document.getElementById("ratigueya");
+	// Radio buttons de mascotas - Ya no necesarios gracias a la clase Mascota
+	// elementos.inputHipodoge = document.getElementById("hipodoge");
+	// elementos.inputCapipepo = document.getElementById("capipepo");
+	// elementos.inputRatigueya = document.getElementById("ratigueya");
 }
 
 function iniciarJuego() {
@@ -170,23 +199,21 @@ function mostrarResultadoFinal(esVictoria) {
 	elementos.resultadoFinal.style.display = "block";
 }
 
-// OPTIMIZACIÓN: Función más limpia usando array de inputs
+// OPTIMIZACIÓN: Función más limpia usando métodos de la clase Mascota
 function seleccionarMascotaJugador() {
-	const inputsMascotas = [
-		{ input: elementos.inputHipodoge, mascota: MASCOTAS[0] },
-		{ input: elementos.inputCapipepo, mascota: MASCOTAS[1] },
-		{ input: elementos.inputRatigueya, mascota: MASCOTAS[2] },
-	];
-
-	// OPTIMIZACIÓN: Usar find() en lugar de múltiples if/else
-	const mascotaSeleccionada = inputsMascotas.find((item) => item.input.checked);
+	// OPTIMIZACIÓN: Usar los métodos de la clase para verificar selección
+	const mascotasDisponibles = Object.values(MASCOTAS_DATA);
+	const mascotaSeleccionada = mascotasDisponibles.find((mascota) =>
+		mascota.estaSeleccionada()
+	);
 
 	if (!mascotaSeleccionada) {
 		alert("Debes seleccionar una mascota");
 		return;
 	}
 
-	elementos.mascotaJugador.innerHTML = mascotaSeleccionada.mascota;
+	// OPTIMIZACIÓN: Usar la propiedad nombre de la instancia
+	elementos.mascotaJugador.innerHTML = mascotaSeleccionada.nombre;
 	seleccionarMascotaEnemigo();
 	mostrarSeccionesBatalla();
 }
@@ -282,7 +309,7 @@ function actualizarVidas(resultado) {
 	}
 }
 
-// OPTIMIZACIÓN: Función de reinicio más estructurada
+// OPTIMIZACIÓN: Función de reinicio usando métodos de clase
 function reiniciarJuego() {
 	// OPTIMIZACIÓN: Usar configuración centralizada
 	elementos.vidasJugador.innerHTML = CONFIG.VIDAS_INICIALES.toString();
@@ -293,15 +320,9 @@ function reiniciarJuego() {
 	elementos.mascotaJugador.innerHTML = "";
 	elementos.mascotaEnemigo.innerHTML = "";
 
-	// OPTIMIZACIÓN: Desmarcar radio buttons usando array
-	const radioButtons = [
-		elementos.inputHipodoge,
-		elementos.inputCapipepo,
-		elementos.inputRatigueya,
-	];
-
-	radioButtons.forEach((radio) => {
-		radio.checked = false;
+	// OPTIMIZACIÓN: Usar métodos de la clase para deseleccionar
+	Object.values(MASCOTAS_DATA).forEach((mascota) => {
+		mascota.deseleccionar();
 	});
 
 	// Resetear variables globales
