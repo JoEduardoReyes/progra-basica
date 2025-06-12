@@ -2,7 +2,7 @@
 let mascotaJugadorSeleccionada = null;
 let mascotaEnemigoSeleccionada = null;
 
-// OPTIMIZACIÓN: Configuración centralizada para facilitar mantenimiento
+// Configuración centralizada para facilitar mantenimiento
 const CONFIG = {
 	VIDAS_INICIALES: 3,
 	DELAY_RESULTADO_FINAL: 500,
@@ -15,7 +15,7 @@ const ATAQUES = {
 	TIERRA: "Tierra",
 };
 
-// OPTIMIZACIÓN: Estructura para ataques individuales con emoji e id
+// Estructura para ataques individuales
 class Ataque {
 	constructor(nombre, emoji, id) {
 		this.nombre = nombre;
@@ -24,52 +24,37 @@ class Ataque {
 	}
 }
 
-// OPTIMIZACIÓN: Clase Mascota para encapsular datos, comportamientos y ataques
+// Clase Mascota para encapsular datos y comportamientos
 class Mascota {
 	constructor(nombre, id, ataques = []) {
 		this.nombre = nombre;
 		this.id = id;
-		this.ataques = ataques; // Array de objetos Ataque
+		this.ataques = ataques;
 	}
 
-	// MÉTODO: Obtener el elemento DOM del radio button
 	getInputElement() {
 		return document.getElementById(this.id);
 	}
 
-	// MÉTODO: Verificar si esta mascota está seleccionada
 	estaSeleccionada() {
 		return this.getInputElement().checked;
 	}
 
-	// MÉTODO: Deseleccionar esta mascota
 	deseleccionar() {
 		this.getInputElement().checked = false;
 	}
 
-	// MÉTODO: Obtener un ataque aleatorio de esta mascota
 	obtenerAtaqueAleatorio() {
 		if (this.ataques.length === 0) {
-			// Fallback si no tiene ataques definidos
 			return ATAQUES.FUEGO;
 		}
 		const indiceAleatorio = aleatorio(0, this.ataques.length - 1);
 		return this.ataques[indiceAleatorio].nombre;
 	}
-
-	// MÉTODO: Verificar si tiene un ataque específico
-	tieneAtaque(nombreAtaque) {
-		return this.ataques.some((ataque) => ataque.nombre === nombreAtaque);
-	}
-
-	// MÉTODO: Para debugging o logging
-	toString() {
-		const ataquesList = this.ataques.map((ataque) => ataque.nombre).join(", ");
-		return `Mascota: ${this.nombre} (ID: ${this.id}) - Ataques: [${ataquesList}]`;
-	}
 }
 
-// OPTIMIZACIÓN: Instancias de mascotas con sus ataques específicos definidos en el constructor
+// ¡AÑADE NUEVOS MOKEPONES AQUÍ!
+// Solo necesitas añadir una nueva entrada a este objeto.
 const MASCOTAS_DATA = {
 	HIPODOGE: new Mascota("Hipodoge", "hipodoge", [
 		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
@@ -94,16 +79,13 @@ const MASCOTAS_DATA = {
 	]),
 };
 
-// Array de nombres para mantener compatibilidad con el resto del código
-const MASCOTAS = Object.values(MASCOTAS_DATA).map((mascota) => mascota.nombre);
-
 const RESULTADOS = {
 	EMPATE: 0,
 	VICTORIA: 1,
 	DERROTA: -1,
 };
 
-// OPTIMIZACIÓN: Cache de elementos DOM para evitar múltiples querySelector
+// Cache de elementos DOM
 const elementos = {};
 
 window.addEventListener("load", iniciarJuego);
@@ -112,7 +94,7 @@ function aleatorio(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-// OPTIMIZACIÓN: Cachear elementos DOM al inicio
+// Cachea los elementos DOM al inicio
 function cachearElementos() {
 	elementos.botonMascotaJugador = document.getElementById("boton-mascota");
 	elementos.botonFuego = document.getElementById("boton-fuego");
@@ -120,6 +102,7 @@ function cachearElementos() {
 	elementos.botonTierra = document.getElementById("boton-tierra");
 	elementos.botonReiniciar = document.getElementById("boton-reiniciar");
 	elementos.botonNuevaPartida = document.getElementById("boton-nueva-partida");
+	elementos.contenedorMascotas = document.getElementById("contenedor-mascotas");
 
 	// Secciones
 	elementos.seleccionarMascota = document.getElementById("seleccionar-mascota");
@@ -137,19 +120,14 @@ function cachearElementos() {
 }
 
 function iniciarJuego() {
-	// OPTIMIZACIÓN: Cachear elementos DOM una sola vez
 	cachearElementos();
+	inyectarMascotas();
 
-	// Ocultar secciones al inicio del juego
-	ocultarSeccionesIniciales();
-
-	// OPTIMIZACIÓN: Event listeners más limpios usando referencias
+	// Asignación de event listeners
 	elementos.botonMascotaJugador.addEventListener(
 		"click",
 		seleccionarMascotaJugador
 	);
-
-	// OPTIMIZACIÓN: Usar arrow functions consistentemente
 	elementos.botonFuego.addEventListener("click", () =>
 		realizarAtaque(ATAQUES.FUEGO)
 	);
@@ -159,35 +137,52 @@ function iniciarJuego() {
 	elementos.botonTierra.addEventListener("click", () =>
 		realizarAtaque(ATAQUES.TIERRA)
 	);
-
-	// Event listeners para reiniciar
 	elementos.botonReiniciar.addEventListener("click", reiniciarJuego);
 	elementos.botonNuevaPartida.addEventListener("click", reiniciarJuego);
 }
 
-// OPTIMIZACIÓN: Función más limpia usando array de elementos
-function ocultarSeccionesIniciales() {
-	const seccionesAOcultar = [
-		elementos.seleccionarAtaque,
-		elementos.mensajes,
-		elementos.reiniciar,
-		elementos.resultadoFinal,
-	];
-
-	seccionesAOcultar.forEach((seccion) => {
-		seccion.style.display = "none";
-	});
-
-	// Mostrar sección de seleccionar mascota
-	elementos.seleccionarMascota.style.display = "block";
+// NUEVA FUNCIÓN: Genera y muestra las mascotas en el HTML dinámicamente
+function inyectarMascotas() {
+	let opcionesDeMascotas = "";
+	for (const mascotaKey in MASCOTAS_DATA) {
+		const mascota = MASCOTAS_DATA[mascotaKey];
+		// Usamos template literals para crear el HTML de cada mascota
+		opcionesDeMascotas += `
+            <input type="radio" name="mascota" id="${mascota.id}" />
+            <label for="${mascota.id}">${mascota.nombre}</label>
+        `;
+	}
+	elementos.contenedorMascotas.innerHTML = opcionesDeMascotas;
 }
 
-function mostrarSeccionesBatalla() {
-	// Ocultar secciones no necesarias
-	elementos.seleccionarMascota.style.display = "none";
-	elementos.resultadoFinal.style.display = "none";
+function seleccionarMascotaJugador() {
+	const mascotasDisponibles = Object.values(MASCOTAS_DATA);
+	mascotaJugadorSeleccionada = mascotasDisponibles.find((mascota) =>
+		mascota.estaSeleccionada()
+	);
 
-	// Mostrar secciones de batalla
+	if (!mascotaJugadorSeleccionada) {
+		alert("Debes seleccionar una mascota");
+		return;
+	}
+
+	elementos.mascotaJugador.innerHTML = mascotaJugadorSeleccionada.nombre;
+	seleccionarMascotaEnemigo();
+
+	// Oculta la sección de selección de mascota y muestra la de ataque
+	elementos.seleccionarMascota.style.display = "none";
+	mostrarSeccionesBatalla();
+}
+
+function seleccionarMascotaEnemigo() {
+	const mascotasDisponibles = Object.values(MASCOTAS_DATA);
+	const indiceAleatorio = aleatorio(0, mascotasDisponibles.length - 1);
+	mascotaEnemigoSeleccionada = mascotasDisponibles[indiceAleatorio];
+	elementos.mascotaEnemigo.innerHTML = mascotaEnemigoSeleccionada.nombre;
+}
+
+// Muestra las secciones necesarias para la batalla
+function mostrarSeccionesBatalla() {
 	const seccionesAMostrar = [
 		elementos.seleccionarAtaque,
 		elementos.mensajes,
@@ -199,72 +194,6 @@ function mostrarSeccionesBatalla() {
 	});
 }
 
-// OPTIMIZACIÓN: Configuración de resultados más estructurada
-function mostrarResultadoFinal(esVictoria) {
-	// Ocultar secciones de batalla
-	const seccionesAOcultar = [
-		elementos.seleccionarAtaque,
-		elementos.mensajes,
-		elementos.reiniciar,
-	];
-
-	seccionesAOcultar.forEach((seccion) => {
-		seccion.style.display = "none";
-	});
-
-	// OPTIMIZACIÓN: Configuración de resultados en objeto
-	const configuracionResultado = {
-		victoria: {
-			className: "victoria",
-			emoji: "🏆",
-			titulo: "¡FELICIDADES!",
-			mensaje: "¡HAS GANADO LA BATALLA! ERES EL CAMPEÓN MOKEPON",
-		},
-		derrota: {
-			className: "derrota",
-			emoji: "💀",
-			titulo: "GAME OVER",
-			mensaje: "¡HAS SIDO DERROTADO! Mejor suerte la próxima vez...",
-		},
-	};
-
-	const config = configuracionResultado[esVictoria ? "victoria" : "derrota"];
-
-	elementos.resultadoFinal.className = config.className;
-	document.getElementById("emoji-resultado").textContent = config.emoji;
-	document.getElementById("titulo-resultado").textContent = config.titulo;
-	document.getElementById("mensaje-resultado").textContent = config.mensaje;
-
-	elementos.resultadoFinal.style.display = "block";
-}
-
-// OPTIMIZACIÓN: Función más limpia usando métodos de la clase Mascota
-function seleccionarMascotaJugador() {
-	// OPTIMIZACIÓN: Usar los métodos de la clase para verificar selección
-	const mascotasDisponibles = Object.values(MASCOTAS_DATA);
-	mascotaJugadorSeleccionada = mascotasDisponibles.find((mascota) =>
-		mascota.estaSeleccionada()
-	);
-
-	if (!mascotaJugadorSeleccionada) {
-		alert("Debes seleccionar una mascota");
-		return;
-	}
-
-	// OPTIMIZACIÓN: Usar la propiedad nombre de la instancia
-	elementos.mascotaJugador.innerHTML = mascotaJugadorSeleccionada.nombre;
-	seleccionarMascotaEnemigo();
-	mostrarSeccionesBatalla();
-}
-
-function seleccionarMascotaEnemigo() {
-	const mascotasDisponibles = Object.values(MASCOTAS_DATA);
-	const indiceAleatorio = aleatorio(0, mascotasDisponibles.length - 1);
-	mascotaEnemigoSeleccionada = mascotasDisponibles[indiceAleatorio];
-	elementos.mascotaEnemigo.innerHTML = mascotaEnemigoSeleccionada.nombre;
-}
-
-// Función unificada para manejar ataques
 function realizarAtaque(tipoAtaque) {
 	const ataqueJugador = tipoAtaque;
 	const ataqueEnemigo = mascotaEnemigoSeleccionada.obtenerAtaqueAleatorio();
@@ -274,13 +203,11 @@ function realizarAtaque(tipoAtaque) {
 	actualizarVidas(resultado);
 }
 
-// OPTIMIZACIÓN: Map para reglas de combate más escalable
 function determinarResultado(ataqueJugador, ataqueEnemigo) {
 	if (ataqueJugador === ataqueEnemigo) {
 		return RESULTADOS.EMPATE;
 	}
 
-	// OPTIMIZACIÓN: Map de victorias más legible y escalable
 	const reglasVictoria = new Map([
 		[ATAQUES.FUEGO, ATAQUES.TIERRA],
 		[ATAQUES.AGUA, ATAQUES.FUEGO],
@@ -292,48 +219,33 @@ function determinarResultado(ataqueJugador, ataqueEnemigo) {
 		: RESULTADOS.DERROTA;
 }
 
-// OPTIMIZACIÓN: Mensajes más estructurados
 function mostrarResultado(resultado, ataqueJugador, ataqueEnemigo) {
 	const mensaje = document.createElement("p");
-
 	const mensajes = {
 		[RESULTADOS.EMPATE]: "¡EMPATE!",
-		[RESULTADOS.VICTORIA]: `Tu mascota atacó con ${ataqueJugador}, tu enemigo atacó con ${ataqueEnemigo}, ¡GANASTE!`,
-		[RESULTADOS.DERROTA]: `Tu mascota atacó con ${ataqueJugador}, tu enemigo atacó con ${ataqueEnemigo}, ¡PERDISTE!`,
+		[RESULTADOS.VICTORIA]: `Tu mascota atacó con ${ataqueJugador}, el enemigo con ${ataqueEnemigo}. ¡GANASTE! 🎉`,
+		[RESULTADOS.DERROTA]: `Tu mascota atacó con ${ataqueJugador}, el enemigo con ${ataqueEnemigo}. ¡PERDISTE! 😢`,
 	};
-
 	mensaje.innerHTML = mensajes[resultado];
-
-	// OPTIMIZACIÓN: Usar insertAdjacentElement para mejor performance
 	elementos.resultado.insertAdjacentElement("afterbegin", mensaje);
 }
 
-// OPTIMIZACIÓN: Función más limpia con early returns
 function actualizarVidas(resultado) {
-	if (resultado === RESULTADOS.EMPATE) {
-		return; // Early return para empates
-	}
+	if (resultado === RESULTADOS.EMPATE) return;
 
 	if (resultado === RESULTADOS.VICTORIA) {
-		const vidasEnemigo = parseInt(elementos.vidasEnemigo.innerHTML);
-		const nuevasVidasEnemigo = vidasEnemigo - 1;
-		elementos.vidasEnemigo.innerHTML = nuevasVidasEnemigo;
-
-		if (nuevasVidasEnemigo <= 0) {
+		const vidasEnemigo = parseInt(elementos.vidasEnemigo.innerHTML) - 1;
+		elementos.vidasEnemigo.innerHTML = vidasEnemigo;
+		if (vidasEnemigo <= 0) {
 			setTimeout(
 				() => mostrarResultadoFinal(true),
 				CONFIG.DELAY_RESULTADO_FINAL
 			);
 		}
-		return;
-	}
-
-	if (resultado === RESULTADOS.DERROTA) {
-		const vidasJugador = parseInt(elementos.vidasJugador.innerHTML);
-		const nuevasVidasJugador = vidasJugador - 1;
-		elementos.vidasJugador.innerHTML = nuevasVidasJugador;
-
-		if (nuevasVidasJugador <= 0) {
+	} else {
+		const vidasJugador = parseInt(elementos.vidasJugador.innerHTML) - 1;
+		elementos.vidasJugador.innerHTML = vidasJugador;
+		if (vidasJugador <= 0) {
 			setTimeout(
 				() => mostrarResultadoFinal(false),
 				CONFIG.DELAY_RESULTADO_FINAL
@@ -342,25 +254,35 @@ function actualizarVidas(resultado) {
 	}
 }
 
-// OPTIMIZACIÓN: Función de reinicio usando métodos de clase
+function mostrarResultadoFinal(esVictoria) {
+	[
+		elementos.seleccionarAtaque,
+		elementos.mensajes,
+		elementos.reiniciar,
+	].forEach((s) => (s.style.display = "none"));
+
+	const config = esVictoria
+		? {
+				className: "victoria",
+				emoji: "🏆",
+				titulo: "¡FELICIDADES!",
+				mensaje: "¡HAS GANADO LA BATALLA! ERES EL CAMPEÓN MOKEPON",
+		  }
+		: {
+				className: "derrota",
+				emoji: "💀",
+				titulo: "GAME OVER",
+				mensaje: "¡HAS SIDO DERROTADO! Mejor suerte la próxima vez...",
+		  };
+
+	elementos.resultadoFinal.className = config.className;
+	document.getElementById("emoji-resultado").textContent = config.emoji;
+	document.getElementById("titulo-resultado").textContent = config.titulo;
+	document.getElementById("mensaje-resultado").textContent = config.mensaje;
+
+	elementos.resultadoFinal.style.display = "block";
+}
+
 function reiniciarJuego() {
-	// OPTIMIZACIÓN: Usar configuración centralizada
-	elementos.vidasJugador.innerHTML = CONFIG.VIDAS_INICIALES.toString();
-	elementos.vidasEnemigo.innerHTML = CONFIG.VIDAS_INICIALES.toString();
-
-	// Limpiar contenido
-	elementos.resultado.innerHTML = "";
-	elementos.mascotaJugador.innerHTML = "";
-	elementos.mascotaEnemigo.innerHTML = "";
-
-	// OPTIMIZACIÓN: Usar métodos de la clase para deseleccionar
-	Object.values(MASCOTAS_DATA).forEach((mascota) => {
-		mascota.deseleccionar();
-	});
-
-	// Resetear variables globales
-	mascotaJugadorSeleccionada = null;
-	mascotaEnemigoSeleccionada = null;
-
-	ocultarSeccionesIniciales();
+	location.reload();
 }

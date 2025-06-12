@@ -17,16 +17,12 @@
 
 		<section id="seleccionar-mascota">
 			<h2>Elige a tu mascota</h2>
-			<input type="radio" name="mascota" id="hipodoge" />
-			<label for="hipodoge">Hipodoge</label>
-			<input type="radio" name="mascota" id="capipepo" />
-			<label for="capipepo">Capipepo</label>
-			<input type="radio" name="mascota" id="ratigueya" />
-			<label for="ratigueya">Ratigueya</label>
+			<!-- Este contenedor se llenará dinámicamente con JavaScript -->
+			<div id="contenedor-mascotas"></div>
 			<button id="boton-mascota">Seleccionar</button>
 		</section>
 
-		<section id="seleccionar-ataque">
+		<section id="seleccionar-ataque" style="display: none">
 			<h2>Elige tu ataque</h2>
 			<p>
 				Tu mascota <span id="mascota-jugador"></span> tiene
@@ -43,16 +39,15 @@
 			</p>
 		</section>
 
-		<section id="mensajes">
+		<section id="mensajes" style="display: none">
 			<div id="resultado"></div>
 		</section>
 
-		<section id="reiniciar">
+		<section id="reiniciar" style="display: none">
 			<button id="boton-reiniciar">Reiniciar</button>
 		</section>
 
-		<!-- Nueva sección para el resultado final -->
-		<section id="resultado-final">
+		<section id="resultado-final" style="display: none">
 			<div class="emoji" id="emoji-resultado"></div>
 			<h2 id="titulo-resultado"></h2>
 			<p id="mensaje-resultado"></p>
