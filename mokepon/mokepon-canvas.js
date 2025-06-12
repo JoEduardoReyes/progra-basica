@@ -3,21 +3,25 @@ const elementos = {};
 let lienzo; // Variable para el contexto del canvas
 let mapa; // Variable para el elemento canvas
 
-// --- CLASE PARA DATOS ESTÁTICOS DE MOKEPONES ---
-// La clase ahora solo contiene la definición de un Mokepon, no su estado en el juego.
+// --- CLASE MOKEPON CON ESTADO COMPLETO ---
 class Mokepon {
 	constructor(nombre, id, foto) {
 		this.nombre = nombre;
 		this.id = id;
 		this.foto = foto;
+		this.x = 20;
+		this.y = 30;
+		this.ancho = 80;
+		this.alto = 80;
+		this.mapaFoto = new Image();
+		this.mapaFoto.src = foto;
 	}
 }
 
 // --- CONSTANTE CON TODOS LOS MOKEPONES DISPONIBLES ---
-// Usamos una constante para almacenar la lista de todos los Mokepones que existen en el juego.
 const MOKEPONES = [
 	new Mokepon(
-		"Hipodoge 💧",
+		"Hipodoge �",
 		"hipodoge",
 		"https://i.ibb.co/fddKdfNd/hipodoge.png"
 	),
@@ -48,16 +52,7 @@ const MOKEPONES = [
 	),
 ];
 
-// Variable para guardar el objeto de la mascota seleccionada por el jugador
 let mascotaJugadorObjeto;
-// Objeto para manejar al personaje en el mapa (su estado dinámico)
-let personajeJugador = {
-	x: 20,
-	y: 30,
-	ancho: 80,
-	alto: 80,
-	mapaFoto: new Image(),
-};
 
 // --- INICIALIZACIÓN DEL JUEGO ---
 window.addEventListener("load", iniciarJuego);
@@ -66,18 +61,22 @@ function iniciarJuego() {
 	cachearElementos();
 	inyectarMascotasHTML();
 
-	// Ocultar las secciones que no se necesitan al inicio
 	elementos.sectionVerMapa.style.display = "none";
 	elementos.seleccionarAtaque.style.display = "none";
 	elementos.mensajes.style.display = "none";
 	elementos.reiniciar.style.display = "none";
 	elementos.resultadoFinal.style.display = "none";
 
-	// Asignación de event listeners iniciales
 	elementos.botonMascotaJugador.addEventListener(
 		"click",
 		seleccionarMascotaJugador
 	);
+
+	// Agregamos los listeners para los botones de movimiento
+	elementos.botonMoverArriba.addEventListener("click", moverArriba);
+	elementos.botonMoverIzquierda.addEventListener("click", moverIzquierda);
+	elementos.botonMoverAbajo.addEventListener("click", moverAbajo);
+	elementos.botonMoverDerecha.addEventListener("click", moverDerecha);
 }
 
 // --- FUNCIONES DE CONFIGURACIÓN INICIAL ---
@@ -87,18 +86,23 @@ function cachearElementos() {
 	elementos.seleccionarMascota = document.getElementById("seleccionar-mascota");
 	elementos.mascotaJugador = document.getElementById("mascota-jugador");
 	elementos.sectionVerMapa = document.getElementById("ver-mapa");
+	// CORRECCIÓN: Se corrigió el error de tipeo de "seleccionarAque" a "seleccionarAtaque"
 	elementos.seleccionarAtaque = document.getElementById("seleccionar-ataque");
 	elementos.mensajes = document.getElementById("mensajes");
 	elementos.reiniciar = document.getElementById("reiniciar");
 	elementos.resultadoFinal = document.getElementById("resultado-final");
 	mapa = document.getElementById("mapa");
 	lienzo = mapa.getContext("2d");
+
+	// Cacheamos los nuevos botones de movimiento
+	elementos.botonMoverArriba = document.getElementById("mover-arriba");
+	elementos.botonMoverIzquierda = document.getElementById("mover-izquierda");
+	elementos.botonMoverAbajo = document.getElementById("mover-abajo");
+	elementos.botonMoverDerecha = document.getElementById("mover-derecha");
 }
 
-// Genera y muestra las mascotas en el HTML dinámicamente
 function inyectarMascotasHTML() {
 	let opcionesDeMascotas = "";
-	// Iteramos sobre nuestra constante MOKEPONES para crear el HTML
 	MOKEPONES.forEach((mokepon) => {
 		opcionesDeMascotas += `
             <input type="radio" name="mascota" id="${mokepon.id}" />
@@ -110,7 +114,6 @@ function inyectarMascotasHTML() {
 
 // --- LÓGICA DE SELECCIÓN ---
 function seleccionarMascotaJugador() {
-	// Obtenemos el id del input seleccionado
 	const inputSeleccionadoId = document.querySelector(
 		'input[name="mascota"]:checked'
 	)?.id;
@@ -120,7 +123,6 @@ function seleccionarMascotaJugador() {
 		return;
 	}
 
-	// Buscamos el objeto Mokepon correspondiente al id seleccionado
 	mascotaJugadorObjeto = MOKEPONES.find(
 		(mokepon) => mokepon.id === inputSeleccionadoId
 	);
@@ -137,27 +139,46 @@ function iniciarMapa() {
 	mapa.width = 550;
 	mapa.height = 400;
 
-	// Asignamos la foto de la mascota seleccionada al objeto que se dibujará en el mapa
-	personajeJugador.mapaFoto.src = mascotaJugadorObjeto.foto;
-
-	// Usamos un manejador de eventos para dibujar la imagen solo cuando esté cargada
-	personajeJugador.mapaFoto.onload = () => {
+	mascotaJugadorObjeto.mapaFoto.onload = () => {
 		pintarPersonaje();
 	};
 
-	// Si la imagen ya está en la caché del navegador, la dibujamos directamente
-	if (personajeJugador.mapaFoto.complete) {
+	if (mascotaJugadorObjeto.mapaFoto.complete) {
 		pintarPersonaje();
 	}
 }
 
-// Nueva función para pintar al personaje, así podemos reutilizarla
 function pintarPersonaje() {
+	// Limpiamos el canvas antes de volver a dibujar para evitar que la imagen se repita
+	lienzo.clearRect(0, 0, mapa.width, mapa.height);
+
 	lienzo.drawImage(
-		personajeJugador.mapaFoto,
-		personajeJugador.x,
-		personajeJugador.y,
-		personajeJugador.ancho,
-		personajeJugador.alto
+		mascotaJugadorObjeto.mapaFoto,
+		mascotaJugadorObjeto.x,
+		mascotaJugadorObjeto.y,
+		mascotaJugadorObjeto.ancho,
+		mascotaJugadorObjeto.alto
 	);
+}
+
+// --- FUNCIONES DE MOVIMIENTO ---
+
+function moverDerecha() {
+	mascotaJugadorObjeto.x += 5; // Modificamos la posición en X
+	pintarPersonaje(); // Volvemos a dibujar el personaje en su nueva posición
+}
+
+function moverIzquierda() {
+	mascotaJugadorObjeto.x -= 5;
+	pintarPersonaje();
+}
+
+function moverAbajo() {
+	mascotaJugadorObjeto.y += 5;
+	pintarPersonaje();
+}
+
+function moverArriba() {
+	mascotaJugadorObjeto.y -= 5;
+	pintarPersonaje();
 }

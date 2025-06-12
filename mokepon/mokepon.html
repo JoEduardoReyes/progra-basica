@@ -10,7 +10,6 @@
 			href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap"
 			rel="stylesheet"
 		/>
-		<!-- Enlazamos al nuevo archivo CSS -->
 		<link rel="stylesheet" href="mokepon-canvas.css" />
 	</head>
 	<body>
@@ -18,17 +17,20 @@
 
 		<section id="seleccionar-mascota">
 			<h2>Elige a tu mascota</h2>
-			<!-- Este contenedor se llenará dinámicamente con JavaScript -->
 			<div id="contenedor-mascotas"></div>
 			<button id="boton-mascota">Seleccionar</button>
 		</section>
 
-		<!-- Esta sección ahora se mostrará después de elegir mascota -->
 		<section id="ver-mapa" style="display: none">
-			<!-- Título actualizado como en la clase -->
 			<h2>Recorre el mapa con tu mokepon</h2>
-			<!-- El canvas donde se dibujará -->
 			<canvas id="mapa"></canvas>
+			<!-- Nuevos botones para el movimiento -->
+			<div>
+				<button id="mover-arriba">Arriba</button>
+				<button id="mover-izquierda">Izquierda</button>
+				<button id="mover-abajo">Abajo</button>
+				<button id="mover-derecha">Derecha</button>
+			</div>
 		</section>
 
 		<section id="seleccionar-ataque" style="display: none">
@@ -41,7 +43,6 @@
 				La mascota enemiga <span id="mascota-enemigo"></span> tiene
 				<span id="vidas-enemigo">3</span> vidas
 			</p>
-			<!-- Los botones de ataque se insertarán aquí dinámicamente -->
 			<div id="contenedor-ataques"></div>
 		</section>
 
@@ -59,7 +60,6 @@
 			<p id="mensaje-resultado"></p>
 			<button id="boton-nueva-partida">Nueva Partida</button>
 		</section>
-		<!-- Enlazamos al nuevo archivo JavaScript -->
 		<script src="mokepon-canvas.js"></script>
 	</body>
 </html>
