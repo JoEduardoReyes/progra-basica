@@ -59,26 +59,47 @@ class Mascota {
 // ¡AÑADE NUEVOS MOKEPONES AQUÍ!
 // Solo necesitas añadir una nueva entrada a este objeto para expandir el juego.
 const MASCOTAS_DATA = {
-	HIPODOGE: new Mascota("Hipodoge", "hipodoge", [
+	HIPODOGE: new Mascota("Hipodoge 💧", "hipodoge", [
 		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
 		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
 		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
 		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
 		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
 	]),
-	CAPIPEPO: new Mascota("Capipepo", "capipepo", [
+	CAPIPEPO: new Mascota("Capipepo 🌱", "capipepo", [
 		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
 		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
 		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
 		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
 		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
 	]),
-	RATIGUEYA: new Mascota("Ratigueya", "ratigueya", [
+	RATIGUEYA: new Mascota("Ratigueya 🔥", "ratigueya", [
 		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
 		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
 		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
 		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
 		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+	]),
+	PERROCOPTERO: new Mascota("Perrocoptero 🚁", "perrocoptero", [
+		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
+		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
+		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
+	]),
+	GATOSAURIO: new Mascota("Gatosaurio 🦖", "gatosaurio", [
+		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
+		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
+		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
+		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
+		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+	]),
+	LARGARTOÑO: new Mascota("Largartoño 🦎", "largartono", [
+		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
+		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
+		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+		new Ataque(ATAQUES.TIERRA, "🌱", "boton-tierra"),
+		new Ataque(ATAQUES.FUEGO, "🔥", "boton-fuego"),
 	]),
 };
 
