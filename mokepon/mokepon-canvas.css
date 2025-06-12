@@ -1,0 +1,170 @@
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap");
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+body {
+	font-family: "Pixelify Sans", monospace;
+	background-image: url("https://opengameart.org/sites/default/files/summer2.png");
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	min-height: 100vh;
+	padding: 20px;
+	color: #fff;
+	position: relative;
+	text-align: center; /* Centramos el contenido del body */
+}
+
+body::before {
+	content: "";
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.3);
+	z-index: -1;
+}
+
+#titulo {
+	background: linear-gradient(45deg, #4a9c59 0%, #6fb877 50%, #4a9c59 100%);
+	color: #fff;
+	text-align: center;
+	padding: 20px;
+	margin: 0 auto 30px;
+	max-width: 600px;
+	border-radius: 15px;
+	border: 4px solid #2d5d31;
+	box-shadow: 0 0 0 2px #6fb877, 0 8px 16px rgba(0, 0, 0, 0.3),
+		inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+	font-size: 2.5rem;
+	font-weight: 700;
+	text-shadow: 2px 2px 0 #2d5d31, -1px -1px 0 #2d5d31;
+	letter-spacing: 2px;
+}
+
+section {
+	background: linear-gradient(145deg, #f5f5dc 0%, #e6e6d3 50%, #d4d4aa 100%);
+	color: #2d5d31;
+	margin: 20px auto;
+	padding: 25px;
+	max-width: 600px;
+	border-radius: 12px;
+	border: 3px solid #2d5d31;
+	box-shadow: 0 0 0 1px #6fb877, 0 6px 12px rgba(0, 0, 0, 0.2),
+		inset 0 1px 0 rgba(255, 255, 255, 0.3);
+	position: relative;
+}
+
+/* --- ESTILOS PARA EL MAPA Y CANVAS (ACTUALIZADOS) --- */
+#ver-mapa {
+	display: none;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+#mapa {
+	width: 100%;
+	max-width: 550px;
+	height: 400px;
+	/* Fondo oscuro para que el Mokepon resalte, como en la clase */
+	background-color: #2d3748;
+	/* Borde blanco como en el ejemplo de la profesora */
+	border: 2px solid white;
+	border-radius: 8px;
+	margin-top: 15px;
+}
+/* --- FIN DE ESTILOS ACTUALIZADOS --- */
+
+section::before {
+	content: "";
+	position: absolute;
+	top: -3px;
+	left: -3px;
+	right: -3px;
+	bottom: -3px;
+	background: linear-gradient(45deg, #6fb877, #4a9c59, #6fb877);
+	border-radius: 15px;
+	z-index: -1;
+}
+
+h2 {
+	color: #2d5d31;
+	text-align: center;
+	margin-bottom: 20px;
+	font-size: 1.8rem;
+	font-weight: 600;
+	text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+	letter-spacing: 1px;
+}
+
+#seleccionar-mascota label {
+	display: inline-block;
+	margin: 10px 15px;
+	padding: 15px 25px;
+	background: linear-gradient(145deg, #6fb877 0%, #4a9c59 100%);
+	color: white;
+	border: 2px solid #2d5d31;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 600;
+	font-size: 1.1rem;
+	transition: all 0.2s ease;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	text-shadow: 1px 1px 0 #2d5d31;
+	position: relative;
+	min-width: 120px;
+}
+
+#seleccionar-mascota label:hover {
+	background: linear-gradient(145deg, #7fc885 0%, #5aad67 100%);
+	transform: translateY(-2px);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#seleccionar-mascota input[type="radio"] {
+	display: none;
+}
+
+#seleccionar-mascota input[type="radio"]:checked + label {
+	background: linear-gradient(145deg, #ff6b6b 0%, #e53e3e 100%);
+	border-color: #c53030;
+	transform: scale(1.05);
+	box-shadow: 0 0 0 3px #fff, 0 0 0 5px #ff6b6b, 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+button {
+	background: linear-gradient(145deg, #4a9c59 0%, #2d5d31 100%);
+	color: white;
+	border: 2px solid #2d5d31;
+	padding: 12px 24px;
+	margin: 10px 5px;
+	border-radius: 8px;
+	font-family: "Pixelify Sans", monospace;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+	position: relative;
+}
+
+button:hover {
+	background: linear-gradient(145deg, #5aad67 0%, #3a6d41 100%);
+	transform: translateY(-2px);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}

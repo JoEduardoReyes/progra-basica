@@ -76,7 +76,11 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-Images
+# Images
 
 *.png
 *.jpg
+
+/mokepones
+mokepones/
+*.zip

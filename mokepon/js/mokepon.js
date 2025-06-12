@@ -126,6 +126,8 @@ function iniciarJuego() {
 	);
 	elementos.botonReiniciar.addEventListener("click", reiniciarJuego);
 	elementos.botonNuevaPartida.addEventListener("click", reiniciarJuego);
+
+	elementos.sectionVerMapa.style.display = "none";
 }
 
 // --- FUNCIONES DE CONFIGURACIÓN INICIAL ---
@@ -145,6 +147,8 @@ function cachearElementos() {
 	elementos.vidasJugador = document.getElementById("vidas-jugador");
 	elementos.vidasEnemigo = document.getElementById("vidas-enemigo");
 	elementos.resultado = document.getElementById("resultado");
+	elementos.sectionVerMapa = document.getElementById("ver-mapa");
+	elementos.mapa = document.getElementById("mapa");
 }
 
 // Genera y muestra las mascotas en el HTML dinámicamente

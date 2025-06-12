@@ -10,7 +10,8 @@
 			href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap"
 			rel="stylesheet"
 		/>
-		<link rel="stylesheet" href="mokepon.css" />
+		<!-- Enlazamos al nuevo archivo CSS -->
+		<link rel="stylesheet" href="mokepon-canvas.css" />
 	</head>
 	<body>
 		<h1 id="titulo">Mokepon 🔥🌱💧</h1>
@@ -20,6 +21,14 @@
 			<!-- Este contenedor se llenará dinámicamente con JavaScript -->
 			<div id="contenedor-mascotas"></div>
 			<button id="boton-mascota">Seleccionar</button>
+		</section>
+
+		<!-- Esta sección ahora se mostrará después de elegir mascota -->
+		<section id="ver-mapa" style="display: none">
+			<!-- Título actualizado como en la clase -->
+			<h2>Recorre el mapa con tu mokepon</h2>
+			<!-- El canvas donde se dibujará -->
+			<canvas id="mapa"></canvas>
 		</section>
 
 		<section id="seleccionar-ataque" style="display: none">
@@ -50,6 +59,7 @@
 			<p id="mensaje-resultado"></p>
 			<button id="boton-nueva-partida">Nueva Partida</button>
 		</section>
-		<script src="js/mokepon.js"></script>
+		<!-- Enlazamos al nuevo archivo JavaScript -->
+		<script src="mokepon-canvas.js"></script>
 	</body>
 </html>
