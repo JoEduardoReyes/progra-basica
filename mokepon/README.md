@@ -1,85 +1,83 @@
-# 🎮 Mokepon - Version 2.0
+# 🎮 Mokepon - Version 3.0
 
-![Made with JS](https://img.shields.io/badge/Made%20with-JavaScript-yellow)
+![Made with JS](https://img.shields.io/badge/Made%20with-Vanilla%20JS-yellow)
 ![HTML + CSS](https://img.shields.io/badge/Frontend-HTML%2BCSS-blue)
-![Status](https://img.shields.io/badge/Version-2.0-green)
+![Status](https://img.shields.io/badge/Version-3.0-brightgreen)
 ![Progress](https://img.shields.io/badge/Completed-100%25-success)
 
 ---
 
-## 🔥🌱💧 Welcome to the Arena - Now with Style!
+## 🔥🌱💧 Welcome to the Dynamic Arena!
 
-**Mokepon** is a browser-based mini game inspired by classic turn-based monster battles.  
-This is **Version 2.0**, where we step up from logic-only gameplay to a fully styled experience — with a tribute to the **Pokémon Emerald** aesthetic!
+**Mokepon** is a browser-based mini-game inspired by classic turn-based monster battles. This is **Version 3.0**, where the game's architecture gets a major upgrade. We've moved from static HTML to a dynamic system where creatures are rendered directly from JavaScript, making the game scalable and easier to expand.
 
-Built using vanilla JavaScript, HTML, and now CSS.
+The roster has grown! Now featuring new creatures like **Perrocoptero, Gatosaurio, and Largartoño**.
 
 ---
 
-## 🧠 What's New in v2.0?
+## 🧠 What's New in v3.0?
 
-- 🎨 Styled UI with custom CSS
-- 🟩 Background inspired by Pokémon Emerald
-- 🧩 Improved layout and spacing
-- 🎮 More immersive and fun visuals
+- **Dynamic Creature Rendering**: The pet selection screen is now generated automatically from a JavaScript object (`MASCOTAS_DATA`). This means adding new Mokepons is as simple as adding a new entry to the object, with no HTML changes needed.
+- **Expanded Roster**: More creatures have joined the battle, each with its unique set of attacks.
+- **Object-Oriented Structure**: The code has been refactored using `Classes` for `Mascota` and `Ataque`, making the logic cleaner, more modular, and easier to maintain.
+- **Centralized Configuration**: A new `CONFIG` object holds key game settings (like starting lives), making it easy to tweak game balance.
 
-> This version transforms the functional foundation into a more polished and game-like experience!
+> This version focuses on smart code architecture, transforming the game into a scalable and easily expandable project!
 
 ---
 
 ## 🕹️ Gameplay
 
-- Choose a pet: **Hipodoge**, **Capipepo**, or **Ratigueya**
-- Battle using fire, water, or earth attacks
-- Random enemy logic creates new matches each time
-- First to reduce opponent’s lives to zero wins
+- Choose your pet from an expanding, dynamically-generated list.
+- Battle using fire, water, or earth attacks.
+- Face a random enemy in each match.
+- The first player to reduce the opponent’s lives to zero wins.
 
 ---
 
 ## 📁 Files
 
-- `mokepon.html`: Structure and game elements
-- `mokepon.js`: All game logic and interactions
-- `styles.css`: Custom styling added in this version
+- `mokepon.html`: The core HTML structure, now with a dynamic container for the pets.
+- `mokepon.js`: The heart of the game, containing all logic, creature data, and the new dynamic rendering functions.
+- `mokepon.css`: All styles for the game, including the Pokémon-inspired theme.
 
 ---
 
 ## 🚀 How to Play Locally
 
-1. Clone the repository:
+1.  Clone the repository:
+    ```bash
+    git clone [https://github.com/JoEduardoReyes/progra-basica.git](https://github.com/JoEduardoReyes/progra-basica.git)
+    ```
+2.  Navigate to the project folder:
+    ```bash
+    cd progra-basica/mokepon
+    ```
+3.  Open `mokepon.html` in your browser.
 
-   ```bash
-   git clone https://github.com/JoEduardoReyes/progra-basica.git
+---
 
-   ```
+## ✨ Features
 
-2. Navigate to the project folder:
+- 🐾 **Dynamic Pet Selection**: Radio buttons and labels are generated from a JS object.
+- 🔥 **Element-Based Attacks**: A classic fire, water, and earth combat system.
+- 📜 **Live Battle Log**: See the results of each round in the messages panel.
+- 🎨 **Pokémon-Style UI**: A nostalgic design to enhance the gaming experience.
+- 🔁 **Restart and Replay**: Jump back into the action anytime.
 
-```bash
-cd progra-basica
-```
+---
 
-3. Open `mokepon.html` in your browser.
+## 🧩 Upcoming Versions
 
-✨ Features
-
-- 🐾 Pet selection with styled radio buttons
-- 🔥 Element-based attack system (fire, water, earth)
-- 📜 Battle log and result messages
-- 🎨 Pokémon-style design and game screen
-- 🔁 Restart and replay any time
-
-🧩 Upcoming Versions
-
-| Version | Planned Features                 | Status         |
-| :------ | :------------------------------- | :------------- |
-| 1.0     | HTML + JavaScript base game      | ✅ Completed   |
-| 2.0     | Styled version with CSS + layout | ✅ Completed   |
-| 3.0     | Responsive design + animations   | 🔄 In progress |
-| 4.0     | Multiplayer backend with Node.js | 🔜 Coming soon |
+| Version | Planned Features                         | Status           |
+| :------ | :--------------------------------------- | :--------------- |
+| 2.0     | Styled version with CSS + layout         | ✅ Completed     |
+| **3.0** | **Dynamic JS Rendering & Code Refactor** | ✅ **Completed** |
+| 4.0     | Responsive design + animations           | 🔄 In progress   |
+| 5.0     | Multiplayer backend with Node.js         | 🔜 Coming soon   |
 
 ## 📜 License
 
 This project is part of my personal educational journey and is released for learning purposes. Feel free to fork or build on it!
 
-Made with focus, passion, and vanilla JS by JoEduardoReyes 🚀
+Made with focus, passion, and scalable JS by **JoEduardoReyes** 🚀
