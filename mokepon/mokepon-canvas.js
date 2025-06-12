@@ -76,18 +76,21 @@ function iniciarJuego() {
 		seleccionarMascotaJugador
 	);
 
-	// --- NUEVOS LISTENERS PARA MOVIMIENTO CONTINUO ---
-	// El evento 'mousedown' inicia el movimiento
+	// Listeners para movimiento con botones
 	elementos.botonMoverArriba.addEventListener("mousedown", moverArriba);
 	elementos.botonMoverIzquierda.addEventListener("mousedown", moverIzquierda);
 	elementos.botonMoverAbajo.addEventListener("mousedown", moverAbajo);
 	elementos.botonMoverDerecha.addEventListener("mousedown", moverDerecha);
-
-	// El evento 'mouseup' detiene el movimiento
 	elementos.botonMoverArriba.addEventListener("mouseup", detenerMovimiento);
 	elementos.botonMoverIzquierda.addEventListener("mouseup", detenerMovimiento);
 	elementos.botonMoverAbajo.addEventListener("mouseup", detenerMovimiento);
 	elementos.botonMoverDerecha.addEventListener("mouseup", detenerMovimiento);
+
+	// --- NUEVOS LISTENERS PARA TECLADO ---
+	// 'keydown' se activa cuando se presiona una tecla
+	window.addEventListener("keydown", sePresionoUnaTecla);
+	// 'keyup' se activa cuando se suelta una tecla
+	window.addEventListener("keyup", detenerMovimiento);
 }
 
 // --- FUNCIONES DE CONFIGURACIÓN INICIAL ---
@@ -142,20 +145,15 @@ function seleccionarMascotaJugador() {
 function iniciarMapa() {
 	mapa.width = 550;
 	mapa.height = 400;
-	// Iniciamos el ciclo de dibujado (nuestro "motor de juego")
-	intervalo = setInterval(pintarPersonaje, 50); // Llama a pintarPersonaje cada 50 milisegundos
+	intervalo = setInterval(pintarPersonaje, 50);
 }
 
-// La función ahora se encarga de calcular la nueva posición y dibujar
 function pintarPersonaje() {
-	// Actualizamos la posición del personaje basándonos en su velocidad
 	mascotaJugadorObjeto.x += mascotaJugadorObjeto.velocidadX;
 	mascotaJugadorObjeto.y += mascotaJugadorObjeto.velocidadY;
 
-	// Limpiamos el canvas
 	lienzo.clearRect(0, 0, mapa.width, mapa.height);
 
-	// Dibujamos al personaje en su nueva posición
 	lienzo.drawImage(
 		mascotaJugadorObjeto.mapaFoto,
 		mascotaJugadorObjeto.x,
@@ -183,8 +181,30 @@ function moverArriba() {
 	mascotaJugadorObjeto.velocidadY = -5;
 }
 
-// Función para detener el movimiento al soltar el botón
 function detenerMovimiento() {
 	mascotaJugadorObjeto.velocidadX = 0;
 	mascotaJugadorObjeto.velocidadY = 0;
+}
+
+// --- NUEVA FUNCIÓN PARA GESTIONAR EL TECLADO ---
+function sePresionoUnaTecla(event) {
+	// El switch compara la tecla presionada ('event.key')
+	// con los diferentes casos.
+	switch (event.key) {
+		case "ArrowUp":
+			moverArriba();
+			break;
+		case "ArrowDown":
+			moverAbajo();
+			break;
+		case "ArrowLeft":
+			moverIzquierda();
+			break;
+		case "ArrowRight":
+			moverDerecha();
+			break;
+		default:
+			// Si se presiona cualquier otra tecla, no hacemos nada.
+			break;
+	}
 }
