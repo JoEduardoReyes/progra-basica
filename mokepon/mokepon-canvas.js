@@ -2,8 +2,9 @@
 const elementos = {};
 let lienzo; // Variable para el contexto del canvas
 let mapa; // Variable para el elemento canvas
+let intervalo; // Variable para guardar el intervalo del juego
 
-// --- CLASE MOKEPON CON ESTADO COMPLETO ---
+// --- CLASE MOKEPON CON ESTADO COMPLETO Y VELOCIDAD ---
 class Mokepon {
 	constructor(nombre, id, foto) {
 		this.nombre = nombre;
@@ -15,13 +16,16 @@ class Mokepon {
 		this.alto = 80;
 		this.mapaFoto = new Image();
 		this.mapaFoto.src = foto;
+		// Nuevas propiedades para controlar el movimiento
+		this.velocidadX = 0;
+		this.velocidadY = 0;
 	}
 }
 
 // --- CONSTANTE CON TODOS LOS MOKEPONES DISPONIBLES ---
 const MOKEPONES = [
 	new Mokepon(
-		"Hipodoge �",
+		"Hipodoge 💧",
 		"hipodoge",
 		"https://i.ibb.co/fddKdfNd/hipodoge.png"
 	),
@@ -72,11 +76,18 @@ function iniciarJuego() {
 		seleccionarMascotaJugador
 	);
 
-	// Agregamos los listeners para los botones de movimiento
-	elementos.botonMoverArriba.addEventListener("click", moverArriba);
-	elementos.botonMoverIzquierda.addEventListener("click", moverIzquierda);
-	elementos.botonMoverAbajo.addEventListener("click", moverAbajo);
-	elementos.botonMoverDerecha.addEventListener("click", moverDerecha);
+	// --- NUEVOS LISTENERS PARA MOVIMIENTO CONTINUO ---
+	// El evento 'mousedown' inicia el movimiento
+	elementos.botonMoverArriba.addEventListener("mousedown", moverArriba);
+	elementos.botonMoverIzquierda.addEventListener("mousedown", moverIzquierda);
+	elementos.botonMoverAbajo.addEventListener("mousedown", moverAbajo);
+	elementos.botonMoverDerecha.addEventListener("mousedown", moverDerecha);
+
+	// El evento 'mouseup' detiene el movimiento
+	elementos.botonMoverArriba.addEventListener("mouseup", detenerMovimiento);
+	elementos.botonMoverIzquierda.addEventListener("mouseup", detenerMovimiento);
+	elementos.botonMoverAbajo.addEventListener("mouseup", detenerMovimiento);
+	elementos.botonMoverDerecha.addEventListener("mouseup", detenerMovimiento);
 }
 
 // --- FUNCIONES DE CONFIGURACIÓN INICIAL ---
@@ -86,7 +97,6 @@ function cachearElementos() {
 	elementos.seleccionarMascota = document.getElementById("seleccionar-mascota");
 	elementos.mascotaJugador = document.getElementById("mascota-jugador");
 	elementos.sectionVerMapa = document.getElementById("ver-mapa");
-	// CORRECCIÓN: Se corrigió el error de tipeo de "seleccionarAque" a "seleccionarAtaque"
 	elementos.seleccionarAtaque = document.getElementById("seleccionar-ataque");
 	elementos.mensajes = document.getElementById("mensajes");
 	elementos.reiniciar = document.getElementById("reiniciar");
@@ -94,7 +104,6 @@ function cachearElementos() {
 	mapa = document.getElementById("mapa");
 	lienzo = mapa.getContext("2d");
 
-	// Cacheamos los nuevos botones de movimiento
 	elementos.botonMoverArriba = document.getElementById("mover-arriba");
 	elementos.botonMoverIzquierda = document.getElementById("mover-izquierda");
 	elementos.botonMoverAbajo = document.getElementById("mover-abajo");
@@ -112,24 +121,19 @@ function inyectarMascotasHTML() {
 	elementos.contenedorMascotas.innerHTML = opcionesDeMascotas;
 }
 
-// --- LÓGICA DE SELECCIÓN ---
 function seleccionarMascotaJugador() {
 	const inputSeleccionadoId = document.querySelector(
 		'input[name="mascota"]:checked'
 	)?.id;
-
 	if (!inputSeleccionadoId) {
 		alert("Debes seleccionar una mascota para continuar");
 		return;
 	}
-
 	mascotaJugadorObjeto = MOKEPONES.find(
 		(mokepon) => mokepon.id === inputSeleccionadoId
 	);
-
 	elementos.seleccionarMascota.style.display = "none";
 	elementos.sectionVerMapa.style.display = "flex";
-
 	iniciarMapa();
 }
 
@@ -138,20 +142,20 @@ function seleccionarMascotaJugador() {
 function iniciarMapa() {
 	mapa.width = 550;
 	mapa.height = 400;
-
-	mascotaJugadorObjeto.mapaFoto.onload = () => {
-		pintarPersonaje();
-	};
-
-	if (mascotaJugadorObjeto.mapaFoto.complete) {
-		pintarPersonaje();
-	}
+	// Iniciamos el ciclo de dibujado (nuestro "motor de juego")
+	intervalo = setInterval(pintarPersonaje, 50); // Llama a pintarPersonaje cada 50 milisegundos
 }
 
+// La función ahora se encarga de calcular la nueva posición y dibujar
 function pintarPersonaje() {
-	// Limpiamos el canvas antes de volver a dibujar para evitar que la imagen se repita
+	// Actualizamos la posición del personaje basándonos en su velocidad
+	mascotaJugadorObjeto.x += mascotaJugadorObjeto.velocidadX;
+	mascotaJugadorObjeto.y += mascotaJugadorObjeto.velocidadY;
+
+	// Limpiamos el canvas
 	lienzo.clearRect(0, 0, mapa.width, mapa.height);
 
+	// Dibujamos al personaje en su nueva posición
 	lienzo.drawImage(
 		mascotaJugadorObjeto.mapaFoto,
 		mascotaJugadorObjeto.x,
@@ -161,24 +165,26 @@ function pintarPersonaje() {
 	);
 }
 
-// --- FUNCIONES DE MOVIMIENTO ---
+// --- FUNCIONES DE MOVIMIENTO (AHORA ASIGNAN VELOCIDAD) ---
 
 function moverDerecha() {
-	mascotaJugadorObjeto.x += 5; // Modificamos la posición en X
-	pintarPersonaje(); // Volvemos a dibujar el personaje en su nueva posición
+	mascotaJugadorObjeto.velocidadX = 5;
 }
 
 function moverIzquierda() {
-	mascotaJugadorObjeto.x -= 5;
-	pintarPersonaje();
+	mascotaJugadorObjeto.velocidadX = -5;
 }
 
 function moverAbajo() {
-	mascotaJugadorObjeto.y += 5;
-	pintarPersonaje();
+	mascotaJugadorObjeto.velocidadY = 5;
 }
 
 function moverArriba() {
-	mascotaJugadorObjeto.y -= 5;
-	pintarPersonaje();
+	mascotaJugadorObjeto.velocidadY = -5;
+}
+
+// Función para detener el movimiento al soltar el botón
+function detenerMovimiento() {
+	mascotaJugadorObjeto.velocidadX = 0;
+	mascotaJugadorObjeto.velocidadY = 0;
 }
