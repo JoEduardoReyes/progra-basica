@@ -41,11 +41,14 @@ class Mascota {
 	}
 
 	deseleccionar() {
-		this.getInputElement().checked = false;
+		if (this.getInputElement()) {
+			this.getInputElement().checked = false;
+		}
 	}
 
 	obtenerAtaqueAleatorio() {
 		if (this.ataques.length === 0) {
+			// Fallback si no tiene ataques definidos
 			return ATAQUES.FUEGO;
 		}
 		const indiceAleatorio = aleatorio(0, this.ataques.length - 1);
@@ -54,7 +57,7 @@ class Mascota {
 }
 
 // ¡AÑADE NUEVOS MOKEPONES AQUÍ!
-// Solo necesitas añadir una nueva entrada a este objeto.
+// Solo necesitas añadir una nueva entrada a este objeto para expandir el juego.
 const MASCOTAS_DATA = {
 	HIPODOGE: new Mascota("Hipodoge", "hipodoge", [
 		new Ataque(ATAQUES.AGUA, "💧", "boton-agua"),
@@ -88,30 +91,34 @@ const RESULTADOS = {
 // Cache de elementos DOM
 const elementos = {};
 
+// --- INICIALIZACIÓN DEL JUEGO ---
 window.addEventListener("load", iniciarJuego);
 
-function aleatorio(min, max) {
-	return Math.floor(Math.random() * (max - min + 1) + min);
+function iniciarJuego() {
+	cachearElementos();
+	inyectarMascotas();
+
+	// Asignación de event listeners iniciales
+	elementos.botonMascotaJugador.addEventListener(
+		"click",
+		seleccionarMascotaJugador
+	);
+	elementos.botonReiniciar.addEventListener("click", reiniciarJuego);
+	elementos.botonNuevaPartida.addEventListener("click", reiniciarJuego);
 }
 
-// Cachea los elementos DOM al inicio
+// --- FUNCIONES DE CONFIGURACIÓN INICIAL ---
 function cachearElementos() {
 	elementos.botonMascotaJugador = document.getElementById("boton-mascota");
-	elementos.botonFuego = document.getElementById("boton-fuego");
-	elementos.botonAgua = document.getElementById("boton-agua");
-	elementos.botonTierra = document.getElementById("boton-tierra");
 	elementos.botonReiniciar = document.getElementById("boton-reiniciar");
 	elementos.botonNuevaPartida = document.getElementById("boton-nueva-partida");
 	elementos.contenedorMascotas = document.getElementById("contenedor-mascotas");
-
-	// Secciones
+	elementos.contenedorAtaques = document.getElementById("contenedor-ataques");
 	elementos.seleccionarMascota = document.getElementById("seleccionar-mascota");
 	elementos.seleccionarAtaque = document.getElementById("seleccionar-ataque");
 	elementos.mensajes = document.getElementById("mensajes");
 	elementos.reiniciar = document.getElementById("reiniciar");
 	elementos.resultadoFinal = document.getElementById("resultado-final");
-
-	// Elementos de juego
 	elementos.mascotaJugador = document.getElementById("mascota-jugador");
 	elementos.mascotaEnemigo = document.getElementById("mascota-enemigo");
 	elementos.vidasJugador = document.getElementById("vidas-jugador");
@@ -119,34 +126,11 @@ function cachearElementos() {
 	elementos.resultado = document.getElementById("resultado");
 }
 
-function iniciarJuego() {
-	cachearElementos();
-	inyectarMascotas();
-
-	// Asignación de event listeners
-	elementos.botonMascotaJugador.addEventListener(
-		"click",
-		seleccionarMascotaJugador
-	);
-	elementos.botonFuego.addEventListener("click", () =>
-		realizarAtaque(ATAQUES.FUEGO)
-	);
-	elementos.botonAgua.addEventListener("click", () =>
-		realizarAtaque(ATAQUES.AGUA)
-	);
-	elementos.botonTierra.addEventListener("click", () =>
-		realizarAtaque(ATAQUES.TIERRA)
-	);
-	elementos.botonReiniciar.addEventListener("click", reiniciarJuego);
-	elementos.botonNuevaPartida.addEventListener("click", reiniciarJuego);
-}
-
-// NUEVA FUNCIÓN: Genera y muestra las mascotas en el HTML dinámicamente
+// Genera y muestra las mascotas en el HTML dinámicamente
 function inyectarMascotas() {
 	let opcionesDeMascotas = "";
 	for (const mascotaKey in MASCOTAS_DATA) {
 		const mascota = MASCOTAS_DATA[mascotaKey];
-		// Usamos template literals para crear el HTML de cada mascota
 		opcionesDeMascotas += `
             <input type="radio" name="mascota" id="${mascota.id}" />
             <label for="${mascota.id}">${mascota.nombre}</label>
@@ -155,6 +139,7 @@ function inyectarMascotas() {
 	elementos.contenedorMascotas.innerHTML = opcionesDeMascotas;
 }
 
+// --- LÓGICA DE SELECCIÓN ---
 function seleccionarMascotaJugador() {
 	const mascotasDisponibles = Object.values(MASCOTAS_DATA);
 	mascotaJugadorSeleccionada = mascotasDisponibles.find((mascota) =>
@@ -167,10 +152,11 @@ function seleccionarMascotaJugador() {
 	}
 
 	elementos.mascotaJugador.innerHTML = mascotaJugadorSeleccionada.nombre;
-	seleccionarMascotaEnemigo();
-
-	// Oculta la sección de selección de mascota y muestra la de ataque
 	elementos.seleccionarMascota.style.display = "none";
+
+	// Llama a las funciones para preparar la batalla
+	mostrarAtaques(mascotaJugadorSeleccionada.ataques);
+	seleccionarMascotaEnemigo();
 	mostrarSeccionesBatalla();
 }
 
@@ -181,32 +167,37 @@ function seleccionarMascotaEnemigo() {
 	elementos.mascotaEnemigo.innerHTML = mascotaEnemigoSeleccionada.nombre;
 }
 
-// Muestra las secciones necesarias para la batalla
-function mostrarSeccionesBatalla() {
-	const seccionesAMostrar = [
-		elementos.seleccionarAtaque,
-		elementos.mensajes,
-		elementos.reiniciar,
-	];
+// --- LÓGICA DE BATALLA ---
+// Muestra los ataques del Mokepon seleccionado y asigna listeners
+function mostrarAtaques(ataques) {
+	let ataquesHtml = "";
+	// Crea el HTML para cada botón de ataque usando template literals
+	ataques.forEach((ataque) => {
+		ataquesHtml += `
+            <button id="${ataque.id}" class="boton-de-ataque" data-attack="${ataque.nombre}">${ataque.nombre} ${ataque.emoji}</button>
+        `;
+	});
+	elementos.contenedorAtaques.innerHTML = ataquesHtml;
 
-	seccionesAMostrar.forEach((seccion) => {
-		seccion.style.display = "block";
+	// IMPORTANTE: Agrega event listeners DESPUÉS de que los botones son creados
+	const botonesDeAtaque = document.querySelectorAll(".boton-de-ataque");
+	botonesDeAtaque.forEach((boton) => {
+		boton.addEventListener("click", (e) => {
+			const ataqueNombre = e.target.dataset.attack;
+			realizarAtaque(ataqueNombre);
+		});
 	});
 }
 
 function realizarAtaque(tipoAtaque) {
-	const ataqueJugador = tipoAtaque;
 	const ataqueEnemigo = mascotaEnemigoSeleccionada.obtenerAtaqueAleatorio();
-
-	const resultado = determinarResultado(ataqueJugador, ataqueEnemigo);
-	mostrarResultado(resultado, ataqueJugador, ataqueEnemigo);
+	const resultado = determinarResultado(tipoAtaque, ataqueEnemigo);
+	mostrarResultado(resultado, tipoAtaque, ataqueEnemigo);
 	actualizarVidas(resultado);
 }
 
 function determinarResultado(ataqueJugador, ataqueEnemigo) {
-	if (ataqueJugador === ataqueEnemigo) {
-		return RESULTADOS.EMPATE;
-	}
+	if (ataqueJugador === ataqueEnemigo) return RESULTADOS.EMPATE;
 
 	const reglasVictoria = new Map([
 		[ATAQUES.FUEGO, ATAQUES.TIERRA],
@@ -219,12 +210,21 @@ function determinarResultado(ataqueJugador, ataqueEnemigo) {
 		: RESULTADOS.DERROTA;
 }
 
+// --- ACTUALIZACIÓN DE UI ---
+function mostrarSeccionesBatalla() {
+	[
+		elementos.seleccionarAtaque,
+		elementos.mensajes,
+		elementos.reiniciar,
+	].forEach((s) => (s.style.display = "block"));
+}
+
 function mostrarResultado(resultado, ataqueJugador, ataqueEnemigo) {
 	const mensaje = document.createElement("p");
 	const mensajes = {
 		[RESULTADOS.EMPATE]: "¡EMPATE!",
-		[RESULTADOS.VICTORIA]: `Tu mascota atacó con ${ataqueJugador}, el enemigo con ${ataqueEnemigo}. ¡GANASTE! 🎉`,
-		[RESULTADOS.DERROTA]: `Tu mascota atacó con ${ataqueJugador}, el enemigo con ${ataqueEnemigo}. ¡PERDISTE! 😢`,
+		[RESULTADOS.VICTORIA]: `Atacaste con ${ataqueJugador}, el enemigo con ${ataqueEnemigo}. ¡GANASTE! 🎉`,
+		[RESULTADOS.DERROTA]: `Atacaste con ${ataqueJugador}, el enemigo con ${ataqueEnemigo}. ¡PERDISTE! 😢`,
 	};
 	mensaje.innerHTML = mensajes[resultado];
 	elementos.resultado.insertAdjacentElement("afterbegin", mensaje);
@@ -279,10 +279,14 @@ function mostrarResultadoFinal(esVictoria) {
 	document.getElementById("emoji-resultado").textContent = config.emoji;
 	document.getElementById("titulo-resultado").textContent = config.titulo;
 	document.getElementById("mensaje-resultado").textContent = config.mensaje;
-
 	elementos.resultadoFinal.style.display = "block";
 }
 
+// --- UTILIDADES ---
 function reiniciarJuego() {
 	location.reload();
+}
+
+function aleatorio(min, max) {
+	return Math.floor(Math.random() * (max - min + 1) + min);
 }
