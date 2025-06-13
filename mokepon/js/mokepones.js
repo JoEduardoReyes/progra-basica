@@ -119,3 +119,49 @@ const VENTAJA_DE_TIPO = {
 	SINIESTRO: ["PELEA", "AGUA", "FUEGO"],
 	NORMAL: ["PELEA", "TIERRA", "AGUA"],
 };
+
+// --- NUEVA FUNCIÓN PARA ASIGNAR ATAQUES ---
+function asignarAtaques(mokepon) {
+	// Limpiamos los ataques previos por si acaso
+	mokepon.ataques = [];
+
+	// 1. Filtramos los ataques disponibles
+	const ataquesDeSuTipo = ATAQUES_DISPONIBLES.filter(
+		(ataque) => ataque.tipo === mokepon.tipo
+	);
+	const ataquesDeOtrosTipos = ATAQUES_DISPONIBLES.filter(
+		(ataque) => ataque.tipo !== mokepon.tipo
+	);
+
+	// 2. Asignamos 2 ataques de su mismo tipo (asegurándonos de que no se repitan)
+	while (mokepon.ataques.length < 2) {
+		const indiceAleatorio = Math.floor(Math.random() * ataquesDeSuTipo.length);
+		const ataqueSeleccionado = ataquesDeSuTipo[indiceAleatorio];
+		// Si el ataque no ha sido añadido ya, lo agregamos
+		if (!mokepon.ataques.includes(ataqueSeleccionado)) {
+			mokepon.ataques.push(ataqueSeleccionado);
+		}
+	}
+
+	// 3. Asignamos 2 ataques de otros tipos de forma aleatoria
+	while (mokepon.ataques.length < 4) {
+		const indiceAleatorio = Math.floor(
+			Math.random() * ataquesDeOtrosTipos.length
+		);
+		const ataqueSeleccionado = ataquesDeOtrosTipos[indiceAleatorio];
+		if (!mokepon.ataques.includes(ataqueSeleccionado)) {
+			mokepon.ataques.push(ataqueSeleccionado);
+		}
+	}
+}
+
+// --- VERIFICACIÓN EN CONSOLA ---
+// (Esta parte es solo para probar que la función funciona. Se puede quitar después)
+
+// Tomamos a Hipodoge como ejemplo
+const hipodogeDePrueba = MOKEPONES.find((m) => m.id === "hipodoge");
+// Le asignamos sus ataques
+asignarAtaques(hipodogeDePrueba);
+// Mostramos el resultado en la consola
+console.log(`Ataques asignados para ${hipodogeDePrueba.nombre}:`);
+console.log(hipodogeDePrueba.ataques);
