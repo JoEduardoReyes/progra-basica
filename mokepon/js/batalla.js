@@ -35,6 +35,7 @@ function cachearElementos() {
 	elementos.resultado = document.getElementById("resultado");
 	elementos.reiniciar = document.getElementById("reiniciar");
 	elementos.botonReiniciar = document.getElementById("boton-reiniciar");
+	elementos.mensajes = document.getElementById("mensajes");
 }
 
 function inyectarMascotasHTML() {
@@ -51,16 +52,16 @@ function inyectarMascotasHTML() {
 // --- LÓGICA DE BATALLA ---
 
 function iniciarBatalla() {
-	console.log("Iniciando batalla...");
+	// Mostramos la sección de mensajes que estaba oculta
+	elementos.mensajes.style.display = "block";
+
 	asignarAtaques(mascotaJugadorObjeto);
 	asignarAtaques(mascotaEnemigoObjeto);
 
-	// Actualizamos la UI, pero la lógica principal estará en la consola.
 	elementos.mascotaJugador.innerHTML = mascotaJugadorObjeto.nombre;
 	elementos.mascotaEnemigo.innerHTML = mascotaEnemigoObjeto.nombre;
-	elementos.vidasJugador.innerHTML = vidasJugador;
-	elementos.vidasEnemigo.innerHTML = vidasEnemigo;
 
+	actualizarVidasUI();
 	mostrarAtaques();
 }
 
@@ -75,11 +76,9 @@ function mostrarAtaques() {
 	});
 	elementos.contenedorAtaques.innerHTML = botonesHTML;
 
-	console.log("Botones de ataque mostrados. Añadiendo listeners...");
 	const botonesDeAtaque = document.querySelectorAll(".boton-de-ataque");
 	botonesDeAtaque.forEach((boton) => {
 		boton.addEventListener("click", (e) => {
-			console.log("¡Botón de ataque clickeado!");
 			ataqueJugador = mascotaJugadorObjeto.ataques.find(
 				(a) => a.id === e.target.id
 			);
@@ -93,15 +92,10 @@ function secuenciaCombate() {
 		Math.random() * mascotaEnemigoObjeto.ataques.length
 	);
 	ataqueEnemigo = mascotaEnemigoObjeto.ataques[indiceAleatorio];
-
-	console.log("--- INICIA SECUENCIA DE COMBATE ---");
-	console.log("Ataque del Jugador:", ataqueJugador);
-	console.log("Ataque del Enemigo:", ataqueEnemigo);
-
 	determinarGanador();
 }
 
-// --- LÓGICA PARA DETERMINAR GANADOR (ENFOCADA EN CONSOLA) ---
+// --- LÓGICA PARA DETERMINAR GANADOR ---
 function determinarGanador() {
 	const tipoAtaqueJugador = ataqueJugador.tipo;
 	const tipoMokeponEnemigo = mascotaEnemigoObjeto.tipo;
@@ -110,78 +104,66 @@ function determinarGanador() {
 
 	let resultado;
 
-	console.log(
-		`Tu ataque tipo ${tipoAtaqueJugador} vs. Mokepon enemigo tipo ${tipoMokeponEnemigo}`
-	);
-	console.log(
-		`Ataque enemigo tipo ${tipoAtaqueEnemigo} vs. tu Mokepon tipo ${tipoMokeponJugador}`
-	);
-
-	// 1. Revisa si hay una ventaja clara
 	const jugadorTieneVentaja =
 		VENTAJA_DE_TIPO[tipoAtaqueJugador]?.includes(tipoMokeponEnemigo);
 	const enemigoTieneVentaja =
 		VENTAJA_DE_TIPO[tipoAtaqueEnemigo]?.includes(tipoMokeponJugador);
 
-	console.log("¿Jugador tiene ventaja?", jugadorTieneVentaja);
-	console.log("¿Enemigo tiene ventaja?", enemigoTieneVentaja);
-
-	// 2. Aplica la lógica de 3 pasos
 	if (jugadorTieneVentaja && !enemigoTieneVentaja) {
-		resultado = "VICTORIA (Ventaja Clara)";
-		// vidasEnemigo--; // Lógica de vidas comentada temporalmente
+		resultado = "GANASTE �";
+		vidasEnemigo--;
 	} else if (enemigoTieneVentaja && !jugadorTieneVentaja) {
-		resultado = "DERROTA (Ventaja Clara del Enemigo)";
-		// vidasJugador--; // Lógica de vidas comentada temporalmente
+		resultado = "PERDISTE 😢";
+		vidasJugador--;
 	} else if (jugadorTieneVentaja && enemigoTieneVentaja) {
-		resultado = "EMPATE (Ventajas Anuladas)";
+		resultado = "EMPATE por anulación 😐";
 	} else {
-		// 3. Punto muerto, se resuelve por suerte (Golpe Crítico)
-		console.log("Sin ventajas claras... ¡Se decide por suerte!");
 		if (Math.random() < 0.5) {
-			resultado = "VICTORIA (Golpe de Suerte Crítico)";
-			// vidasEnemigo--; // Lógica de vidas comentada temporalmente
+			resultado = "GANASTE por Golpe Crítico! 💥";
+			vidasEnemigo--;
 		} else {
-			resultado = "DERROTA (Golpe de Suerte Crítico del Enemigo)";
-			// vidasJugador--; // Lógica de vidas comentada temporalmente
+			resultado = "PERDISTE por Golpe Crítico... 💥";
+			vidasJugador--;
 		}
 	}
 
-	// 4. Muestra el resultado final en la consola
-	console.log("Resultado de la ronda:", resultado);
-	console.log("--- FIN DE LA RONDA ---");
-
-	// Las funciones de UI están comentadas para depurar la lógica primero.
-	// crearMensaje(resultado);
-	// actualizarVidasUI();
-	// revisarSiTerminaElJuego();
+	crearMensaje(resultado);
+	actualizarVidasUI();
+	revisarSiTerminaElJuego();
 }
 
-// --- FUNCIONES DE UI (TEMPORALMENTE INACTIVAS) ---
+// --- FUNCIONES DE UI (AHORA ACTIVAS) ---
 
-// function actualizarVidasUI() {
-//     elementos.vidasJugador.innerHTML = vidasJugador;
-//     elementos.vidasEnemigo.innerHTML = vidasEnemigo;
-// }
+function actualizarVidasUI() {
+	elementos.vidasJugador.innerHTML = vidasJugador;
+	elementos.vidasEnemigo.innerHTML = vidasEnemigo;
+}
 
-// function crearMensaje(resultado) {
-//     let parrafo = document.createElement('p');
-//     parrafo.innerHTML = `Tu mascota atacó con ${ataqueJugador.nombre}. La mascota enemiga atacó con ${ataqueEnemigo.nombre}. Resultado: ${resultado}`;
-//     elementos.resultado.appendChild(parrafo);
-// }
+function crearMensaje(resultado) {
+	let parrafo = document.createElement("p");
+	parrafo.innerHTML = `Atacaste con ${ataqueJugador.nombre}. El enemigo atacó con ${ataqueEnemigo.nombre}. <br><strong>Resultado: ${resultado}</strong>`;
 
-// function revisarSiTerminaElJuego() {
-//     if (vidasEnemigo <= 0) {
-//         crearMensajeFinal("¡FELICITACIONES! Has ganado la batalla.");
-//     } else if (vidasJugador <= 0) {
-//         crearMensajeFinal("GAME OVER. Has sido derrotado.");
-//     }
-// }
+	// CAMBIO CLAVE: Usamos insertAdjacentElement para poner el nuevo mensaje arriba
+	elementos.resultado.insertAdjacentElement("afterbegin", parrafo);
+}
 
-// function crearMensajeFinal(mensajeFinal) {
-//     elementos.resultado.innerHTML = mensajeFinal;
-//     document.querySelectorAll('.boton-de-ataque').forEach(boton => {
-//         boton.disabled = true;
-//     });
-//     elementos.reiniciar.style.display = 'block';
-// }
+function revisarSiTerminaElJuego() {
+	if (vidasEnemigo <= 0) {
+		crearMensajeFinal("¡FELICITACIONES! Has ganado la batalla.");
+	} else if (vidasJugador <= 0) {
+		crearMensajeFinal("GAME OVER. Has sido derrotado.");
+	}
+}
+
+function crearMensajeFinal(mensajeFinal) {
+	// Limpiamos los mensajes anteriores y mostramos el resultado final
+	elementos.resultado.innerHTML = `<h2>${mensajeFinal}</h2>`;
+
+	// Deshabilitar botones de ataque
+	document.querySelectorAll(".boton-de-ataque").forEach((boton) => {
+		boton.disabled = true;
+	});
+
+	// Mostrar la sección del botón de reiniciar
+	elementos.reiniciar.style.display = "block";
+}

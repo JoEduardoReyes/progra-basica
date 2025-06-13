@@ -84,3 +84,6 @@ $RECYCLE.BIN/
 /mokepones
 mokepones/
 *.zip
+
+**/*restore*.js
+**/*restore*.css
