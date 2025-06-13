@@ -3,12 +3,12 @@ let mapa = document.getElementById("mapa");
 let lienzo = mapa.getContext("2d");
 let intervalo;
 let mapaBackground = new Image();
-// mascotaJugadorObjeto y mascotaEnemigoObjeto se definirán en este archivo
+// mascotaJugadorObjeto y mascotaEnemigoObjeto se definirán aquí
 
 // --- FUNCIÓN PRINCIPAL PARA INICIAR LA FASE DEL MAPA ---
 // Esta función es llamada desde batalla.js cuando el jugador hace clic en "Seleccionar"
 function iniciarFaseDeMapa() {
-	// 1. Lógica para seleccionar la mascota del jugador (movida desde batalla.js)
+	// 1. Lógica para seleccionar la mascota del jugador
 	const inputSeleccionadoId = document.querySelector(
 		'input[name="mascota"]:checked'
 	)?.id;
@@ -24,7 +24,7 @@ function iniciarFaseDeMapa() {
 	document.getElementById("seleccionar-mascota").style.display = "none";
 	document.getElementById("ver-mapa").style.display = "flex";
 
-	// 3. Inicia el mapa (esta función prepara el canvas y los listeners)
+	// 3. Inicia el mapa (prepara el canvas y los listeners)
 	iniciarMapa();
 }
 
@@ -88,7 +88,7 @@ function pintarCanvas() {
 	}
 }
 
-// --- FUNCIÓN DE COLISIÓN ---
+// --- FUNCIÓN DE COLISIÓN (MODIFICADA) ---
 function revisarColision() {
 	const arribaEnemigo = mascotaEnemigoObjeto.y;
 	const abajoEnemigo = mascotaEnemigoObjeto.y + mascotaEnemigoObjeto.alto;
@@ -106,13 +106,18 @@ function revisarColision() {
 		derechaMascota < izquierdaEnemigo ||
 		izquierdaMascota > derechaEnemigo
 	) {
-		return;
+		return; // No hay colisión, la función termina aquí.
 	}
 
+	// Si hay colisión:
 	detenerMovimiento();
-	clearInterval(intervalo);
-	alert(`¡Colisión con ${mascotaEnemigoObjeto.nombre}!`);
-	// Futuro: Aquí se llamará a la lógica de batalla.js
+	clearInterval(intervalo); // Detiene el dibujado del mapa.
+
+	// CAMBIO PRINCIPAL: Ocultamos el mapa y mostramos la sección de ataque.
+	document.getElementById("ver-mapa").style.display = "none";
+	document.getElementById("seleccionar-ataque").style.display = "flex";
+
+	// Futuro: Aquí se iniciará la lógica de batalla desde batalla.js
 }
 
 // --- FUNCIONES DE MOVIMIENTO ---
