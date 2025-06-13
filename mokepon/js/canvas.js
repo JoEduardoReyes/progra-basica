@@ -3,13 +3,41 @@ let mapa = document.getElementById("mapa");
 let lienzo = mapa.getContext("2d");
 let intervalo;
 let mapaBackground = new Image();
+// mascotaJugadorObjeto y mascotaEnemigoObjeto se definirán en este archivo
 
-// --- LÓGICA DEL CANVAS ---
+// --- FUNCIÓN PRINCIPAL PARA INICIAR LA FASE DEL MAPA ---
+// Esta función es llamada desde batalla.js cuando el jugador hace clic en "Seleccionar"
+function iniciarFaseDeMapa() {
+	// 1. Lógica para seleccionar la mascota del jugador (movida desde batalla.js)
+	const inputSeleccionadoId = document.querySelector(
+		'input[name="mascota"]:checked'
+	)?.id;
+	if (!inputSeleccionadoId) {
+		alert("Debes seleccionar una mascota para continuar");
+		return;
+	}
+	mascotaJugadorObjeto = MOKEPONES.find(
+		(mokepon) => mokepon.id === inputSeleccionadoId
+	);
 
+	// 2. Oculta la pantalla de selección y muestra el mapa
+	document.getElementById("seleccionar-mascota").style.display = "none";
+	document.getElementById("ver-mapa").style.display = "flex";
+
+	// 3. Inicia el mapa (esta función prepara el canvas y los listeners)
+	iniciarMapa();
+}
+
+// --- LÓGICA DE PREPARACIÓN DEL CANVAS ---
 function iniciarMapa() {
 	mapa.width = 800;
 	mapa.height = 600;
 	mapaBackground.src = "https://i.ibb.co/Q7Bw5zLR/mokemap.png";
+
+	// Se obtiene el enemigo usando la función de mokepones.js
+	mascotaEnemigoObjeto = obtenerEnemigoAleatorio(mascotaJugadorObjeto);
+
+	// Inicia el motor de juego
 	intervalo = setInterval(pintarCanvas, 50);
 
 	// Listeners para el movimiento
@@ -36,9 +64,7 @@ function iniciarMapa() {
 function pintarCanvas() {
 	mascotaJugadorObjeto.x += mascotaJugadorObjeto.velocidadX;
 	mascotaJugadorObjeto.y += mascotaJugadorObjeto.velocidadY;
-
 	lienzo.drawImage(mapaBackground, 0, 0, mapa.width, mapa.height);
-
 	lienzo.drawImage(
 		mascotaJugadorObjeto.mapaFoto,
 		mascotaJugadorObjeto.x,
@@ -46,7 +72,6 @@ function pintarCanvas() {
 		mascotaJugadorObjeto.ancho,
 		mascotaJugadorObjeto.alto
 	);
-
 	lienzo.drawImage(
 		mascotaEnemigoObjeto.mapaFoto,
 		mascotaEnemigoObjeto.x,
@@ -55,7 +80,6 @@ function pintarCanvas() {
 		mascotaEnemigoObjeto.alto
 	);
 
-	// Revisamos la colisión en cada fotograma, solo si el personaje se está moviendo
 	if (
 		mascotaJugadorObjeto.velocidadX !== 0 ||
 		mascotaJugadorObjeto.velocidadY !== 0
@@ -64,9 +88,8 @@ function pintarCanvas() {
 	}
 }
 
-// --- NUEVA FUNCIÓN DE COLISIÓN ---
+// --- FUNCIÓN DE COLISIÓN ---
 function revisarColision() {
-	// Definimos los 4 lados de cada Mokepon para que el código sea más legible
 	const arribaEnemigo = mascotaEnemigoObjeto.y;
 	const abajoEnemigo = mascotaEnemigoObjeto.y + mascotaEnemigoObjeto.alto;
 	const derechaEnemigo = mascotaEnemigoObjeto.x + mascotaEnemigoObjeto.ancho;
@@ -77,42 +100,34 @@ function revisarColision() {
 	const derechaMascota = mascotaJugadorObjeto.x + mascotaJugadorObjeto.ancho;
 	const izquierdaMascota = mascotaJugadorObjeto.x;
 
-	// Si se cumple alguna de estas, NO hay colisión. Si ninguna se cumple, SÍ hay.
 	if (
 		abajoMascota < arribaEnemigo ||
 		arribaMascota > abajoEnemigo ||
 		derechaMascota < izquierdaEnemigo ||
 		izquierdaMascota > derechaEnemigo
 	) {
-		// No hay colisión, no hacemos nada.
 		return;
 	}
 
-	// Si el código llega hasta aquí, significa que hubo una colisión.
 	detenerMovimiento();
-	clearInterval(intervalo); // Detenemos el "motor" del juego para que no siga revisando.
-	alert("¡Has encontrado un oponente! Prepárate para la batalla.");
-	// Aquí es donde, en el futuro, llamaríamos a la función para iniciar el combate elemental.
+	clearInterval(intervalo);
+	alert(`¡Colisión con ${mascotaEnemigoObjeto.nombre}!`);
+	// Futuro: Aquí se llamará a la lógica de batalla.js
 }
 
 // --- FUNCIONES DE MOVIMIENTO ---
-
 function moverDerecha() {
 	mascotaJugadorObjeto.velocidadX = 5;
 }
-
 function moverIzquierda() {
 	mascotaJugadorObjeto.velocidadX = -5;
 }
-
 function moverAbajo() {
 	mascotaJugadorObjeto.velocidadY = 5;
 }
-
 function moverArriba() {
 	mascotaJugadorObjeto.velocidadY = -5;
 }
-
 function detenerMovimiento() {
 	mascotaJugadorObjeto.velocidadX = 0;
 	mascotaJugadorObjeto.velocidadY = 0;
@@ -137,8 +152,6 @@ function sePresionoUnaTecla(event) {
 			case "ArrowRight":
 			case "d":
 				moverDerecha();
-				break;
-			default:
 				break;
 		}
 	}

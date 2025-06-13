@@ -108,42 +108,32 @@ const MOKEPONES = [
 	),
 ];
 
-// --- NUEVA TABLA DE VENTAJAS DE TIPO ---
-// Esta constante define qué tipo de ataque es fuerte contra qué tipo de Mokepon.
-// La lógica es: TIPO_ATACANTE: [TIPO_DEFENSOR_DEBIL, ...]
+// --- TABLA DE VENTAJAS DE TIPO (COMPLETA Y BALANCEADA) ---
 const VENTAJA_DE_TIPO = {
 	FUEGO: ["TIERRA", "NORMAL", "PELEA"],
 	AGUA: ["FUEGO", "SINIESTRO", "NORMAL"],
-	TIERRA: ["NORMAL", "AGUA", "SINIESTRO"],
+	TIERRA: ["FUEGO", "AGUA", "SINIESTRO"],
 	PELEA: ["NORMAL", "SINIESTRO", "TIERRA"],
 	SINIESTRO: ["PELEA", "AGUA", "FUEGO"],
 	NORMAL: ["PELEA", "TIERRA", "AGUA"],
 };
 
-// --- NUEVA FUNCIÓN PARA ASIGNAR ATAQUES ---
+// --- FUNCIÓN PARA ASIGNAR ATAQUES A UN MOKEPON ---
 function asignarAtaques(mokepon) {
-	// Limpiamos los ataques previos por si acaso
 	mokepon.ataques = [];
-
-	// 1. Filtramos los ataques disponibles
 	const ataquesDeSuTipo = ATAQUES_DISPONIBLES.filter(
 		(ataque) => ataque.tipo === mokepon.tipo
 	);
 	const ataquesDeOtrosTipos = ATAQUES_DISPONIBLES.filter(
 		(ataque) => ataque.tipo !== mokepon.tipo
 	);
-
-	// 2. Asignamos 2 ataques de su mismo tipo (asegurándonos de que no se repitan)
 	while (mokepon.ataques.length < 2) {
 		const indiceAleatorio = Math.floor(Math.random() * ataquesDeSuTipo.length);
 		const ataqueSeleccionado = ataquesDeSuTipo[indiceAleatorio];
-		// Si el ataque no ha sido añadido ya, lo agregamos
 		if (!mokepon.ataques.includes(ataqueSeleccionado)) {
 			mokepon.ataques.push(ataqueSeleccionado);
 		}
 	}
-
-	// 3. Asignamos 2 ataques de otros tipos de forma aleatoria
 	while (mokepon.ataques.length < 4) {
 		const indiceAleatorio = Math.floor(
 			Math.random() * ataquesDeOtrosTipos.length
@@ -155,13 +145,23 @@ function asignarAtaques(mokepon) {
 	}
 }
 
-// --- VERIFICACIÓN EN CONSOLA ---
-// (Esta parte es solo para probar que la función funciona. Se puede quitar después)
+// --- NUEVA FUNCIÓN PARA SELECCIONAR UN ENEMIGO ALEATORIO ---
+// Esta función será llamada por canvas.js para obtener un oponente.
+function obtenerEnemigoAleatorio(mascotaJugador) {
+	// 1. Filtra la lista para no escoger al mismo Mokepon del jugador
+	const enemigosPosibles = MOKEPONES.filter(
+		(mokepon) => mokepon.id !== mascotaJugador.id
+	);
 
-// Tomamos a Hipodoge como ejemplo
-const hipodogeDePrueba = MOKEPONES.find((m) => m.id === "hipodoge");
-// Le asignamos sus ataques
-asignarAtaques(hipodogeDePrueba);
-// Mostramos el resultado en la consola
-console.log(`Ataques asignados para ${hipodogeDePrueba.nombre}:`);
-console.log(hipodogeDePrueba.ataques);
+	// 2. Escoge un índice aleatorio de la lista de posibles enemigos
+	const indiceAleatorio = Math.floor(Math.random() * enemigosPosibles.length);
+	const enemigoSeleccionado = enemigosPosibles[indiceAleatorio];
+
+	// 3. Asigna una posición aleatoria en el mapa al enemigo
+	// (Asumimos un tamaño de mapa de 800x600 por ahora)
+	enemigoSeleccionado.x = Math.floor(Math.random() * 720); // 800 (ancho) - 80 (mokepon)
+	enemigoSeleccionado.y = Math.floor(Math.random() * 520); // 600 (alto) - 80 (mokepon)
+
+	// 4. Retorna el objeto del enemigo completamente listo para ser dibujado
+	return enemigoSeleccionado;
+}
