@@ -6,23 +6,16 @@ let mapaBackground = new Image();
 
 // --- LÓGICA DEL CANVAS ---
 
-// Esta función es llamada desde batalla.js después de seleccionar las mascotas.
 function iniciarMapa() {
-	// Dimensiones del mapa
 	mapa.width = 800;
 	mapa.height = 600;
-	// URL de la imagen de fondo
 	mapaBackground.src = "https://i.ibb.co/Q7Bw5zLR/mokemap.png";
-
-	// Inicia el "motor de juego", que redibuja el canvas constantemente
 	intervalo = setInterval(pintarCanvas, 50);
 
-	// --- LISTENERS PARA EL MOVIMIENTO ---
-	// Estos listeners llaman a las funciones de este mismo archivo.
+	// Listeners para el movimiento
 	window.addEventListener("keydown", sePresionoUnaTecla);
 	window.addEventListener("keyup", detenerMovimiento);
 
-	// Asignar listeners a los botones de la interfaz
 	const botonArriba = document.getElementById("mover-arriba");
 	const botonAbajo = document.getElementById("mover-abajo");
 	const botonIzquierda = document.getElementById("mover-izquierda");
@@ -41,14 +34,11 @@ function iniciarMapa() {
 
 // Pinta el estado actual del canvas en cada fotograma
 function pintarCanvas() {
-	// Actualiza la posición del jugador en base a su velocidad
 	mascotaJugadorObjeto.x += mascotaJugadorObjeto.velocidadX;
 	mascotaJugadorObjeto.y += mascotaJugadorObjeto.velocidadY;
 
-	// Pinta el fondo, lo que limpia el frame anterior
 	lienzo.drawImage(mapaBackground, 0, 0, mapa.width, mapa.height);
 
-	// Dibuja al personaje del jugador en su nueva posición
 	lienzo.drawImage(
 		mascotaJugadorObjeto.mapaFoto,
 		mascotaJugadorObjeto.x,
@@ -57,7 +47,6 @@ function pintarCanvas() {
 		mascotaJugadorObjeto.alto
 	);
 
-	// Dibuja al personaje enemigo en su posición aleatoria
 	lienzo.drawImage(
 		mascotaEnemigoObjeto.mapaFoto,
 		mascotaEnemigoObjeto.x,
@@ -65,6 +54,45 @@ function pintarCanvas() {
 		mascotaEnemigoObjeto.ancho,
 		mascotaEnemigoObjeto.alto
 	);
+
+	// Revisamos la colisión en cada fotograma, solo si el personaje se está moviendo
+	if (
+		mascotaJugadorObjeto.velocidadX !== 0 ||
+		mascotaJugadorObjeto.velocidadY !== 0
+	) {
+		revisarColision();
+	}
+}
+
+// --- NUEVA FUNCIÓN DE COLISIÓN ---
+function revisarColision() {
+	// Definimos los 4 lados de cada Mokepon para que el código sea más legible
+	const arribaEnemigo = mascotaEnemigoObjeto.y;
+	const abajoEnemigo = mascotaEnemigoObjeto.y + mascotaEnemigoObjeto.alto;
+	const derechaEnemigo = mascotaEnemigoObjeto.x + mascotaEnemigoObjeto.ancho;
+	const izquierdaEnemigo = mascotaEnemigoObjeto.x;
+
+	const arribaMascota = mascotaJugadorObjeto.y;
+	const abajoMascota = mascotaJugadorObjeto.y + mascotaJugadorObjeto.alto;
+	const derechaMascota = mascotaJugadorObjeto.x + mascotaJugadorObjeto.ancho;
+	const izquierdaMascota = mascotaJugadorObjeto.x;
+
+	// Si se cumple alguna de estas, NO hay colisión. Si ninguna se cumple, SÍ hay.
+	if (
+		abajoMascota < arribaEnemigo ||
+		arribaMascota > abajoEnemigo ||
+		derechaMascota < izquierdaEnemigo ||
+		izquierdaMascota > derechaEnemigo
+	) {
+		// No hay colisión, no hacemos nada.
+		return;
+	}
+
+	// Si el código llega hasta aquí, significa que hubo una colisión.
+	detenerMovimiento();
+	clearInterval(intervalo); // Detenemos el "motor" del juego para que no siga revisando.
+	alert("¡Has encontrado un oponente! Prepárate para la batalla.");
+	// Aquí es donde, en el futuro, llamaríamos a la función para iniciar el combate elemental.
 }
 
 // --- FUNCIONES DE MOVIMIENTO ---
@@ -92,7 +120,6 @@ function detenerMovimiento() {
 
 // --- GESTIÓN DEL TECLADO ---
 function sePresionoUnaTecla(event) {
-	// Solo reaccionamos si el canvas es visible
 	if (document.getElementById("ver-mapa").style.display !== "none") {
 		switch (event.key) {
 			case "ArrowUp":
