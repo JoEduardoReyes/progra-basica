@@ -117,6 +117,8 @@ function revisarColision() {
 	document.getElementById("ver-mapa").style.display = "none";
 	document.getElementById("seleccionar-ataque").style.display = "flex";
 
+	iniciarBatalla(); // Llama a la función de batalla para iniciar la lógica de combate.
+
 	// Futuro: Aquí se iniciará la lógica de batalla desde batalla.js
 }
 
