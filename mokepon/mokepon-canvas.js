@@ -3,6 +3,8 @@ const elementos = {};
 let lienzo; // Variable para el contexto del canvas
 let mapa; // Variable para el elemento canvas
 let intervalo; // Variable para guardar el intervalo del juego
+// Nueva variable para la imagen de fondo del mapa
+let mapaBackground = new Image();
 
 // --- CLASE MOKEPON CON ESTADO COMPLETO Y VELOCIDAD ---
 class Mokepon {
@@ -16,7 +18,6 @@ class Mokepon {
 		this.alto = 80;
 		this.mapaFoto = new Image();
 		this.mapaFoto.src = foto;
-		// Nuevas propiedades para controlar el movimiento
 		this.velocidadX = 0;
 		this.velocidadY = 0;
 	}
@@ -86,10 +87,8 @@ function iniciarJuego() {
 	elementos.botonMoverAbajo.addEventListener("mouseup", detenerMovimiento);
 	elementos.botonMoverDerecha.addEventListener("mouseup", detenerMovimiento);
 
-	// --- NUEVOS LISTENERS PARA TECLADO ---
-	// 'keydown' se activa cuando se presiona una tecla
+	// Listeners para teclado
 	window.addEventListener("keydown", sePresionoUnaTecla);
-	// 'keyup' se activa cuando se suelta una tecla
 	window.addEventListener("keyup", detenerMovimiento);
 }
 
@@ -143,17 +142,26 @@ function seleccionarMascotaJugador() {
 // --- LÓGICA DEL CANVAS ---
 
 function iniciarMapa() {
-	mapa.width = 550;
-	mapa.height = 400;
-	intervalo = setInterval(pintarPersonaje, 50);
+	// Nuevas dimensiones para el mapa
+	mapa.width = 800;
+	mapa.height = 600;
+	// Asignamos la URL de la imagen de fondo
+	mapaBackground.src = "https://i.ibb.co/Q7Bw5zLR/mokemap.png";
+	// Cambiamos el nombre de la función en el intervalo
+	intervalo = setInterval(pintarCanvas, 50);
 }
 
-function pintarPersonaje() {
+// La función ahora pinta el fondo y luego el personaje
+function pintarCanvas() {
+	// Actualizamos la posición del personaje basándonos en su velocidad
 	mascotaJugadorObjeto.x += mascotaJugadorObjeto.velocidadX;
 	mascotaJugadorObjeto.y += mascotaJugadorObjeto.velocidadY;
 
-	lienzo.clearRect(0, 0, mapa.width, mapa.height);
+	// Dibujamos la imagen de fondo, cubriendo todo el canvas.
+	// Esto reemplaza la necesidad de usar clearRect().
+	lienzo.drawImage(mapaBackground, 0, 0, mapa.width, mapa.height);
 
+	// Dibujamos al personaje encima del fondo
 	lienzo.drawImage(
 		mascotaJugadorObjeto.mapaFoto,
 		mascotaJugadorObjeto.x,
@@ -186,10 +194,8 @@ function detenerMovimiento() {
 	mascotaJugadorObjeto.velocidadY = 0;
 }
 
-// --- NUEVA FUNCIÓN PARA GESTIONAR EL TECLADO ---
+// --- FUNCIÓN PARA GESTIONAR EL TECLADO ---
 function sePresionoUnaTecla(event) {
-	// El switch compara la tecla presionada ('event.key')
-	// con los diferentes casos.
 	switch (event.key) {
 		case "ArrowUp":
 			moverArriba();
@@ -204,7 +210,6 @@ function sePresionoUnaTecla(event) {
 			moverDerecha();
 			break;
 		default:
-			// Si se presiona cualquier otra tecla, no hacemos nada.
 			break;
 	}
 }
