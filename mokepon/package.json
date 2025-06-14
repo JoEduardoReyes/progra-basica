@@ -1,0 +1,19 @@
+{
+  "name": "mokepon",
+  "version": "1.0.0",
+  "description": "![Hecho con JS](https://img.shields.io/badge/Hecho%20con-Vanilla%20JS-yellow)\r ![HTML + CSS](https://img.shields.io/badge/Frontend-HTML%2BCSS-blue)\r ![Estado](https://img.shields.io/badge/Versión-4.0-blueviolet)\r ![Progreso](https://img.shields.io/badge/Estado-En%20Progreso-orange)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoEduardoReyes/progra-basica.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JoEduardoReyes/progra-basica/issues"
+  },
+  "homepage": "https://github.com/JoEduardoReyes/progra-basica#readme"
+}
