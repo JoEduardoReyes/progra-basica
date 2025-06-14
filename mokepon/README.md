@@ -1,83 +1,98 @@
-# 🎮 Mokepon - Version 3.0
+# 🎮 Mokepon - Versión 4.0: El Mundo Interactivo
 
-![Made with JS](https://img.shields.io/badge/Made%20with-Vanilla%20JS-yellow)
+![Hecho con JS](https://img.shields.io/badge/Hecho%20con-Vanilla%20JS-yellow)
 ![HTML + CSS](https://img.shields.io/badge/Frontend-HTML%2BCSS-blue)
-![Status](https://img.shields.io/badge/Version-3.0-brightgreen)
-![Progress](https://img.shields.io/badge/Completed-100%25-success)
+![Estado](https://img.shields.io/badge/Versión-4.0-blueviolet)
+![Progreso](https://img.shields.io/badge/Estado-En%20Progreso-orange)
 
 ---
 
-## 🔥🌱💧 Welcome to the Dynamic Arena!
+## 🗺️ ¡Bienvenido al Mundo Interactivo de Mokepon!
 
-**Mokepon** is a browser-based mini-game inspired by classic turn-based monster battles. This is **Version 3.0**, where the game's architecture gets a major upgrade. We've moved from static HTML to a dynamic system where creatures are rendered directly from JavaScript, making the game scalable and easier to expand.
+**Mokepon** ha evolucionado. Esta es la **Versión 4.0**, una reconstrucción fundamental que transforma el juego de una simple arena de combate a un mundo explorable. La introducción de `canvas` de HTML5 y una arquitectura de código completamente modular le dan una nueva dimensión al proyecto, sentando las bases para funcionalidades aún más complejas.
 
-The roster has grown! Now featuring new creatures like **Perrocoptero, Gatosaurio, and Largartoño**.
-
----
-
-## 🧠 What's New in v3.0?
-
-- **Dynamic Creature Rendering**: The pet selection screen is now generated automatically from a JavaScript object (`MASCOTAS_DATA`). This means adding new Mokepons is as simple as adding a new entry to the object, with no HTML changes needed.
-- **Expanded Roster**: More creatures have joined the battle, each with its unique set of attacks.
-- **Object-Oriented Structure**: The code has been refactored using `Classes` for `Mascota` and `Ataque`, making the logic cleaner, more modular, and easier to maintain.
-- **Centralized Configuration**: A new `CONFIG` object holds key game settings (like starting lives), making it easy to tweak game balance.
-
-> This version focuses on smart code architecture, transforming the game into a scalable and easily expandable project!
+Ahora, no solo eliges a tu mascota; la guías a través de un mapa para encontrar a tu oponente antes de que comience la verdadera batalla.
 
 ---
 
-## 🕹️ Gameplay
+## 🧠 ¿Qué hay de nuevo en la v4.0?
 
-- Choose your pet from an expanding, dynamically-generated list.
-- Battle using fire, water, or earth attacks.
-- Face a random enemy in each match.
-- The first player to reduce the opponent’s lives to zero wins.
+Esta versión introduce cambios masivos en la estructura y la jugabilidad:
+
+- **Mundo Interactivo con Canvas**: Se ha añadido una nueva fase de juego. Ahora puedes mover a tu Mokepon por un mapa utilizando los botones en pantalla o las flechas del teclado, buscando a tu oponente.
+- **Arquitectura de Código Modular**: El monolítico archivo `mokepon.js` ha sido dividido en tres módulos especializados, mejorando drásticamente la organización y mantenibilidad:
+  - `js/mokepones.js`: Contiene todas las definiciones de datos (clases de `Mokepon` y `Ataque`, listas de criaturas, tabla de tipos).
+  - `js/canvas.js`: Gestiona toda la lógica del mapa, incluyendo el movimiento del jugador, la creación de enemigos y la detección de colisiones.
+  - `js/batalla.js`: Se enfoca exclusivamente en la lógica del combate por turnos una vez que ocurre una colisión.
+- **Sistema de Combate Avanzado**: La batalla ya no es un simple piedra-papel-tijera. Se ha implementado un sistema de ventajas de tipo, asignación de ataques aleatorios y una lógica de resolución de rondas que incluye "Golpes Críticos" para desempates.
+- **Sistema de Tipos Completo**: Se han añadido 3 nuevos tipos (`PELEA`, `SINIESTRO`, `NORMAL`) y se ha creado una tabla de ventajas balanceada para asegurar batallas justas y estratégicas.
+
+> ¡Esta versión transforma Mokepon en una experiencia de mini-RPG, con exploración y un combate más profundo!
 
 ---
 
-## 📁 Files
+## 🕹️ Jugabilidad
 
-- `mokepon.html`: The core HTML structure, now with a dynamic container for the pets.
-- `mokepon.js`: The heart of the game, containing all logic, creature data, and the new dynamic rendering functions.
-- `mokepon.css`: All styles for the game, including the Pokémon-inspired theme.
+El flujo del juego ha cambiado completamente:
+
+1.  **Selecciona** tu Mokepon de la lista.
+2.  **Explora** el mapa moviendo a tu personaje.
+3.  **Encuentra** a tu oponente y choca con él para iniciar el combate.
+4.  **Lucha** en una batalla estratégica por turnos, usando los 4 ataques únicos asignados a tu Mokepon.
+5.  ¡Derrota a tu oponente y corónate como el campeón Mokepon!
 
 ---
 
-## 🚀 How to Play Locally
+## 📁 Archivos
 
-1.  Clone the repository:
+La estructura del proyecto ahora es más profesional:
+
+- `mokepon.html`: La estructura principal de la aplicación.
+- `styles/styles.css`: La hoja de estilos unificada que da vida al juego.
+- `js/`:
+  - `mokepones.js`: La base de datos y definiciones del juego.
+  - `canvas.js`: El motor del mapa interactivo.
+  - `batalla.js`: El cerebro del sistema de combate.
+
+---
+
+## 🚀 Cómo Jugar Localmente
+
+1.  Clona el repositorio:
     ```bash
     git clone [https://github.com/JoEduardoReyes/progra-basica.git](https://github.com/JoEduardoReyes/progra-basica.git)
     ```
-2.  Navigate to the project folder:
+2.  Navega a la carpeta del proyecto:
     ```bash
     cd progra-basica/mokepon
     ```
-3.  Open `mokepon.html` in your browser.
+3.  Abre `mokepon.html` en tu navegador.
 
 ---
 
-## ✨ Features
+## ✨ Características
 
-- 🐾 **Dynamic Pet Selection**: Radio buttons and labels are generated from a JS object.
-- 🔥 **Element-Based Attacks**: A classic fire, water, and earth combat system.
-- 📜 **Live Battle Log**: See the results of each round in the messages panel.
-- 🎨 **Pokémon-Style UI**: A nostalgic design to enhance the gaming experience.
-- 🔁 **Restart and Replay**: Jump back into the action anytime.
+- 🐾 **Selección Dinámica de Mascotas**: La interfaz se genera desde un objeto JS.
+- 🗺️ **Mapa Explorable con Canvas**: Controla a tu personaje con teclado o botones.
+- 💥 **Detección de Colisiones**: El encuentro con enemigos inicia la batalla.
+- ⚔️ **Sistema de Tipos Avanzado**: 6 tipos y una tabla de ventajas balanceada.
+- 🎲 **Ataques Aleatorios**: Cada Mokepon recibe un set de 4 ataques únicos en cada partida.
+- 🍀 **Lógica de "Golpe Crítico"**: Resuelve enfrentamientos neutrales con un factor de suerte.
+- 🎨 **UI Estilo Pokémon**: Un diseño nostálgico para mejorar la experiencia.
+- 🔁 **Reiniciar y Volver a Jugar**: Salta de nuevo a la acción en cualquier momento.
 
 ---
 
-## 🧩 Upcoming Versions
+## 🧩 Próximas Versiones
 
-| Version | Planned Features                         | Status           |
-| :------ | :--------------------------------------- | :--------------- |
-| 2.0     | Styled version with CSS + layout         | ✅ Completed     |
-| **3.0** | **Dynamic JS Rendering & Code Refactor** | ✅ **Completed** |
-| 4.0     | Responsive design + animations           | 🔄 In progress   |
-| 5.0     | Multiplayer backend with Node.js         | 🔜 Coming soon   |
+| Versión | Características Planeadas                     | Estado            |
+| :------ | :-------------------------------------------- | :---------------- |
+| 3.0     | Renderizado Dinámico y Refactor de Código     | ✅ Completado     |
+| **4.0** | **Canvas, Modularización y Combate Mejorado** | ✅ **Completado** |
+| 5.0     | Backend multijugador con Node.js              | 🔜 Próximamente   |
 
-## 📜 License
+## 📜 Licencia
 
-This project is part of my personal educational journey and is released for learning purposes. Feel free to fork or build on it!
+Este proyecto es parte de mi viaje de aprendizaje personal y se publica con fines educativos. ¡Siéntete libre de bifurcarlo o construir sobre él!
 
-Made with focus, passion, and scalable JS by **JoEduardoReyes** 🚀
+Hecho con enfoque, pasión y JavaScript escalable por **JoEduardoReyes** 🚀

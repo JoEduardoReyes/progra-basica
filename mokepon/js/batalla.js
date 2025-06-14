@@ -15,9 +15,11 @@ function iniciarJuego() {
 	inyectarMascotasHTML();
 	elementos.sectionVerMapa.style.display = "none";
 	elementos.seleccionarAtaque.style.display = "none";
-	elementos.reiniciar.style.display = "none";
+	elementos.resultadoFinal.style.display = "none"; // Aseguramos que esté oculto
 	elementos.botonMascotaJugador.addEventListener("click", iniciarFaseDeMapa);
-	elementos.botonReiniciar.addEventListener("click", () => location.reload());
+	elementos.botonNuevaPartida.addEventListener("click", () =>
+		location.reload()
+	);
 }
 
 // --- FUNCIONES DE CONFIGURACIÓN ---
@@ -33,9 +35,13 @@ function cachearElementos() {
 	elementos.vidasEnemigo = document.getElementById("vidas-enemigo");
 	elementos.contenedorAtaques = document.getElementById("contenedor-ataques");
 	elementos.resultado = document.getElementById("resultado");
-	elementos.reiniciar = document.getElementById("reiniciar");
-	elementos.botonReiniciar = document.getElementById("boton-reiniciar");
 	elementos.mensajes = document.getElementById("mensajes");
+	// Elementos de la pantalla final
+	elementos.resultadoFinal = document.getElementById("resultado-final");
+	elementos.emojiResultado = document.getElementById("emoji-resultado");
+	elementos.tituloResultado = document.getElementById("titulo-resultado");
+	elementos.mensajeResultado = document.getElementById("mensaje-resultado");
+	elementos.botonNuevaPartida = document.getElementById("boton-nueva-partida");
 }
 
 function inyectarMascotasHTML() {
@@ -52,15 +58,11 @@ function inyectarMascotasHTML() {
 // --- LÓGICA DE BATALLA ---
 
 function iniciarBatalla() {
-	// Mostramos la sección de mensajes que estaba oculta
 	elementos.mensajes.style.display = "block";
-
 	asignarAtaques(mascotaJugadorObjeto);
 	asignarAtaques(mascotaEnemigoObjeto);
-
 	elementos.mascotaJugador.innerHTML = mascotaJugadorObjeto.nombre;
 	elementos.mascotaEnemigo.innerHTML = mascotaEnemigoObjeto.nombre;
-
 	actualizarVidasUI();
 	mostrarAtaques();
 }
@@ -68,11 +70,7 @@ function iniciarBatalla() {
 function mostrarAtaques() {
 	let botonesHTML = "";
 	mascotaJugadorObjeto.ataques.forEach((ataque) => {
-		botonesHTML += `
-            <button id="${ataque.id}" class="boton-de-ataque">
-                ${ataque.nombre}
-            </button>
-        `;
+		botonesHTML += `<button id="${ataque.id}" class="boton-de-ataque">${ataque.nombre}</button>`;
 	});
 	elementos.contenedorAtaques.innerHTML = botonesHTML;
 
@@ -95,22 +93,19 @@ function secuenciaCombate() {
 	determinarGanador();
 }
 
-// --- LÓGICA PARA DETERMINAR GANADOR ---
 function determinarGanador() {
 	const tipoAtaqueJugador = ataqueJugador.tipo;
 	const tipoMokeponEnemigo = mascotaEnemigoObjeto.tipo;
 	const tipoAtaqueEnemigo = ataqueEnemigo.tipo;
 	const tipoMokeponJugador = mascotaJugadorObjeto.tipo;
-
 	let resultado;
-
 	const jugadorTieneVentaja =
 		VENTAJA_DE_TIPO[tipoAtaqueJugador]?.includes(tipoMokeponEnemigo);
 	const enemigoTieneVentaja =
 		VENTAJA_DE_TIPO[tipoAtaqueEnemigo]?.includes(tipoMokeponJugador);
 
 	if (jugadorTieneVentaja && !enemigoTieneVentaja) {
-		resultado = "GANASTE �";
+		resultado = "GANASTE 🎉";
 		vidasEnemigo--;
 	} else if (enemigoTieneVentaja && !jugadorTieneVentaja) {
 		resultado = "PERDISTE 😢";
@@ -132,7 +127,7 @@ function determinarGanador() {
 	revisarSiTerminaElJuego();
 }
 
-// --- FUNCIONES DE UI (AHORA ACTIVAS) ---
+// --- FUNCIONES DE UI Y ESTADO DE JUEGO ---
 
 function actualizarVidasUI() {
 	elementos.vidasJugador.innerHTML = vidasJugador;
@@ -142,28 +137,48 @@ function actualizarVidasUI() {
 function crearMensaje(resultado) {
 	let parrafo = document.createElement("p");
 	parrafo.innerHTML = `Atacaste con ${ataqueJugador.nombre}. El enemigo atacó con ${ataqueEnemigo.nombre}. <br><strong>Resultado: ${resultado}</strong>`;
-
-	// CAMBIO CLAVE: Usamos insertAdjacentElement para poner el nuevo mensaje arriba
 	elementos.resultado.insertAdjacentElement("afterbegin", parrafo);
 }
 
 function revisarSiTerminaElJuego() {
-	if (vidasEnemigo <= 0) {
-		crearMensajeFinal("¡FELICITACIONES! Has ganado la batalla.");
-	} else if (vidasJugador <= 0) {
-		crearMensajeFinal("GAME OVER. Has sido derrotado.");
-	}
+	setTimeout(() => {
+		if (vidasEnemigo <= 0) {
+			// Pasamos 'true' para indicar victoria
+			crearMensajeFinal(true);
+		} else if (vidasJugador <= 0) {
+			// Pasamos 'false' para indicar derrota
+			crearMensajeFinal(false);
+		}
+	}, 500);
 }
 
-function crearMensajeFinal(mensajeFinal) {
-	// Limpiamos los mensajes anteriores y mostramos el resultado final
-	elementos.resultado.innerHTML = `<h2>${mensajeFinal}</h2>`;
+// --- FUNCIÓN FINAL MODIFICADA ---
+function crearMensajeFinal(esVictoria) {
+	// Ocultamos las secciones de batalla
+	elementos.seleccionarAtaque.style.display = "none";
+	elementos.mensajes.style.display = "none";
 
-	// Deshabilitar botones de ataque
-	document.querySelectorAll(".boton-de-ataque").forEach((boton) => {
-		boton.disabled = true;
-	});
+	// Configuramos el mensaje final basado en si fue victoria o derrota
+	const config = esVictoria
+		? {
+				className: "victoria",
+				emoji: "🏆",
+				titulo: "¡FELICIDADES!",
+				mensaje: "¡HAS GANADO LA BATALLA! ERES EL CAMPEÓN MOKEPON",
+		  }
+		: {
+				className: "derrota",
+				emoji: "💀",
+				titulo: "GAME OVER",
+				mensaje: "¡HAS SIDO DERROTADO! Mejor suerte la próxima vez...",
+		  };
 
-	// Mostrar la sección del botón de reiniciar
-	elementos.reiniciar.style.display = "block";
+	// Llenamos la sección #resultado-final con la información
+	elementos.resultadoFinal.className = config.className;
+	elementos.emojiResultado.textContent = config.emoji;
+	elementos.tituloResultado.textContent = config.titulo;
+	elementos.mensajeResultado.textContent = config.mensaje;
+
+	// Mostramos la sección del resultado final
+	elementos.resultadoFinal.style.display = "block";
 }
