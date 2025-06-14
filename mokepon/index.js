@@ -2,8 +2,21 @@ const express = require("express");
 
 const app = express();
 
-app.get("/", (req, res) => {
-	res.send("Hola, este es mi primer servidor con Node.js");
+const jugadores = [];
+
+class JUGADOR {
+	constructor(id) {
+		this.id = id;
+	}
+}
+
+app.get("/unirse", (req, res) => {
+	const id = `${Math.random()}`;
+	const nuevoJugador = new JUGADOR(id);
+	jugadores.push(nuevoJugador);
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+	res.send(id);
 });
 
 app.listen(8080, () => {

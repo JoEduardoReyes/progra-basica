@@ -20,6 +20,21 @@ function iniciarJuego() {
 	elementos.botonNuevaPartida.addEventListener("click", () =>
 		location.reload()
 	);
+	unirseAlJuego();
+}
+
+function unirseAlJuego() {
+	fetch("http://localhost:8080/unirse").then(function (res) {
+		console.log(res);
+		if (res.ok) {
+			res.text().then(function (id) {
+				console.log("ID del jugador:", id);
+				// Aquí podrías guardar el ID del jugador si es necesario
+			});
+		} else {
+			console.error("Error al unirse al juego");
+		}
+	});
 }
 
 // --- FUNCIONES DE CONFIGURACIÓN ---
