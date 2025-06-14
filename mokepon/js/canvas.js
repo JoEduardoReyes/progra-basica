@@ -19,6 +19,7 @@ function iniciarFaseDeMapa() {
 	mascotaJugadorObjeto = MOKEPONES.find(
 		(mokepon) => mokepon.id === inputSeleccionadoId
 	);
+	seleccionarMokepon(mascotaJugadorObjeto);
 
 	// 2. Oculta la pantalla de selección y muestra el mapa
 	document.getElementById("seleccionar-mascota").style.display = "none";
