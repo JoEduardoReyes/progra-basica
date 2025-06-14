@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/JoEduardoReyes/progra-basica/issues"
   },
-  "homepage": "https://github.com/JoEduardoReyes/progra-basica#readme"
+  "homepage": "https://github.com/JoEduardoReyes/progra-basica#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }
