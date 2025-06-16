@@ -87,6 +87,7 @@ function pintarCanvas() {
 	) {
 		revisarColision();
 	}
+	enviarPosicion(mascotaJugadorObjeto.x, mascotaJugadorObjeto.y);
 }
 
 // --- FUNCIÓN DE COLISIÓN (MODIFICADA) ---
