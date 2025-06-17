@@ -8,13 +8,13 @@ app.use(express.json());
 
 const jugadores = [];
 
-// La clase Jugador ahora almacena la posición directamente
 class JUGADOR {
 	constructor(id) {
 		this.id = id;
-		this.mokepon = null; // Se asignará más tarde
-		this.x = 0;
-		this.y = 0;
+		this.mokepon = null;
+		// La posición inicial se asigna aleatoriamente para evitar que aparezcan en el mismo lugar
+		this.x = Math.floor(Math.random() * 720); // Ancho del mapa - ancho del mokepon
+		this.y = Math.floor(Math.random() * 520); // Alto del mapa - alto del mokepon
 	}
 
 	asignarMokepon(mokepon) {
@@ -27,12 +27,7 @@ class JUGADOR {
 	}
 }
 
-// La clase Mokepon sigue siendo simple
-class MOKEPON {
-	constructor(nombre) {
-		this.nombre = nombre;
-	}
-}
+// La clase Mokepon ya no es necesaria aquí, ya que recibimos el objeto completo del cliente.
 
 app.get("/unirse", (req, res) => {
 	const id = `${Math.random()}`;
@@ -42,11 +37,11 @@ app.get("/unirse", (req, res) => {
 	res.send(id);
 });
 
-// Este endpoint no necesita cambios, está bien
+// Endpoint para asignar Mokepon
 app.post("/mokepon/:jugadorId", (req, res) => {
 	const { jugadorId } = req.params;
-	const mokeponElegido = req.body.mokepon.nombre;
-	const mokepon = new MOKEPON(mokeponElegido);
+	// Recibimos el objeto completo del mokepon desde el cliente
+	const mokepon = req.body.mokepon;
 
 	const jugadorIndex = jugadores.findIndex((j) => j.id === jugadorId);
 
@@ -59,35 +54,27 @@ app.post("/mokepon/:jugadorId", (req, res) => {
 	}
 });
 
-// --- RUTA CORREGIDA Y MÁS ROBUSTA ---
-// Esta es la función que recibe la posición y la actualiza
+// Endpoint para recibir y enviar posiciones
 app.post("/mokepon/:jugadorId/posicion", (req, res) => {
 	const { jugadorId } = req.params;
 	const { x, y } = req.body;
 
 	const jugadorIndex = jugadores.findIndex((j) => j.id === jugadorId);
 
-	// Si el jugador no existe, no continuamos
-	if (jugadorIndex === -1) {
-		return res.status(404).send({ mensaje: "Jugador no encontrado" });
+	if (jugadorIndex >= 0) {
+		jugadores[jugadorIndex].actualizarPosicion(x, y);
+
+		// Filtramos para enviar a todos los jugadores MENOS al actual.
+		// Solo enviamos los que ya han elegido un Mokepon.
+		const enemigos = jugadores.filter((j) => j.id !== jugadorId && j.mokepon);
+
+		// Enviamos el array de enemigos (puede estar vacío)
+		res.send({ enemigos });
+	} else {
+		res.status(404).send({ mensaje: "Jugador no encontrado" });
 	}
-
-	// Actualizamos la posición del jugador encontrado
-	jugadores[jugadorIndex].actualizarPosicion(x, y);
-
-	// Verificamos si el mokepon existe ANTES de usarlo
-	const nombreMokepon = jugadores[jugadorIndex].mokepon?.nombre;
-	if (nombreMokepon) {
-		console.log(
-			`El ${nombreMokepon} del jugador ${jugadorId} se está moviendo a X: ${x}, Y: ${y}`
-		);
-	}
-
-	// Envía las posiciones de los enemigos (esto es para el futuro multijugador)
-	const enemigos = jugadores.filter((j) => j.id !== jugadorId);
-	res.send({ enemigos });
 });
 
 app.listen(8080, () => {
-	console.log("Servidor corriendo en el puerto 8080");
+	console.log("Servidor multijugador corriendo en el puerto 8080");
 });

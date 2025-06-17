@@ -4,12 +4,11 @@ function seleccionarMokepon(mascotaJugadorObjeto) {
 		headers: {
 			"Content-Type": "application/json",
 		},
+		// Enviamos el objeto completo del mokepon
 		body: JSON.stringify({ mokepon: mascotaJugadorObjeto }),
 	}).then((res) => {
 		if (res.ok) {
-			res.json().then((data) => {
-				console.log(data.mensaje);
-			});
+			console.log("Mokepon seleccionado y enviado al servidor.");
 		} else {
 			console.error("Error al seleccionar el mokepon");
 		}
@@ -34,20 +33,12 @@ function enviarPosicion(x, y) {
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ x, y }), // Se envían las coordenadas
+		body: JSON.stringify({ x, y }),
 	})
 		.then((res) => {
 			if (res.ok) {
 				res.json().then(({ enemigos }) => {
-					// MENSAJE CORREGIDO: Ahora muestra las coordenadas que se envían.
-					console.log(
-						`Posición enviada -> X: ${Math.round(x)}, Y: ${Math.round(y)}`
-					);
-
-					// La lógica para manejar a los enemigos sigue aquí para el futuro,
-					// cuando necesites dibujar a los otros jugadores en el mapa.
-					// Puedes descomentar la siguiente línea para ver sus datos en la consola.
-					// console.log("Datos de enemigos recibidos:", enemigos);
+					dibujarEnemigos(enemigos);
 				});
 			}
 		})
