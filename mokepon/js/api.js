@@ -1,26 +1,6 @@
 // Archivo: public/js/api.js
 
 /**
- * Envía el mokepon seleccionado por el jugador al servidor.
- * @param {Mokepon} mascotaJugadorObjeto - El objeto completo del mokepon del jugador.
- */
-function seleccionarMokepon(mascotaJugadorObjeto) {
-	fetch(`http://localhost:8080/mokepon/${jugadorId}`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ mokepon: mascotaJugadorObjeto }),
-	}).then((res) => {
-		if (res.ok) {
-			console.log("Mokepon seleccionado y enviado al servidor.");
-		} else {
-			console.error("Error al seleccionar el mokepon");
-		}
-	});
-}
-
-/**
  * Se une a la partida, obteniendo un ID de jugador del servidor.
  */
 function unirseAlJuego() {
@@ -28,13 +8,42 @@ function unirseAlJuego() {
 		if (res.ok) {
 			res.text().then(function (id) {
 				console.log("ID del jugador:", id);
-				// Asigna el ID a la variable global para futuras peticiones
-				jugadorId = id;
+				jugadorId = id; // Asigna el ID a la variable global
 			});
 		} else {
 			console.error("Error al unirse al juego");
 		}
 	});
+}
+
+/**
+ * Envía el mokepon seleccionado al servidor y devuelve una promesa
+ * que se resuelve con la posición inicial segura asignada por el servidor.
+ * @param {Mokepon} mascotaJugadorObjeto - El objeto del mokepon del jugador.
+ * @returns {Promise<{x: number, y: number}|null>} - Promesa con las coordenadas iniciales o null si falla.
+ */
+async function seleccionarMokepon(mascotaJugadorObjeto) {
+	try {
+		const res = await fetch(`http://localhost:8080/mokepon/${jugadorId}`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ mokepon: mascotaJugadorObjeto }),
+		});
+
+		if (res.ok) {
+			const posicion = await res.json();
+			console.log("Posición inicial recibida del servidor:", posicion);
+			return posicion; // Devuelve { x, y }
+		} else {
+			console.error("Error al seleccionar el mokepon en el servidor");
+			return null;
+		}
+	} catch (error) {
+		console.error("Error de conexión al seleccionar mokepon:", error);
+		return null;
+	}
 }
 
 /**
@@ -53,16 +62,11 @@ function enviarPosicion(x, y) {
 		.then((res) => {
 			if (res.ok) {
 				res.json().then(({ enemigos }) => {
-					// --- CAMBIO CLAVE ---
-					// En lugar de dibujar los enemigos directamente desde aquí,
-					// llamamos a una función que actualiza nuestro estado local.
-					// El dibujado se hará en el bucle principal de 'pintarCanvas'.
-					// Esta función 'actualizarEnemigos' está definida en canvas.js
 					actualizarEnemigos(enemigos);
 				});
 			}
 		})
 		.catch((error) => {
-			console.error("Error al enviar la posición:", error);
+			// No mostramos error en consola para no saturar si el servidor se reinicia
 		});
 }
