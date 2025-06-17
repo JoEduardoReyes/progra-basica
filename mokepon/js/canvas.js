@@ -1,9 +1,12 @@
+// Archivo: public/js/canvas.js
+
 // --- VARIABLES GLOBALES DEL CANVAS ---
-let mapa = document.getElementById("mapa");
-let lienzo = mapa.getContext("2d");
+const mapa = document.getElementById("mapa");
+const lienzo = mapa.getContext("2d");
 let intervalo;
-let mapaBackground = new Image();
-// 'mascotaJugadorObjeto' se mantiene, pero 'mascotaEnemigoObjeto' se elimina.
+const mapaBackground = new Image();
+// Variable auxiliar (array) que almacenará el estado de todos los enemigos.
+let enemigos = [];
 
 // --- FUNCIÓN PRINCIPAL PARA INICIAR LA FASE DEL MAPA ---
 function iniciarFaseDeMapa() {
@@ -11,15 +14,23 @@ function iniciarFaseDeMapa() {
 		'input[name="mascota"]:checked'
 	)?.id;
 	if (!inputSeleccionadoId) {
+		// Usamos un modal o un elemento en el DOM en lugar de alert
 		alert("Debes seleccionar una mascota para continuar");
 		return;
 	}
 	mascotaJugadorObjeto = MOKEPONES.find(
 		(mokepon) => mokepon.id === inputSeleccionadoId
 	);
-	// IMPORTANTE: Le asignamos una posición inicial aleatoria a nuestro mokepon
-	mascotaJugadorObjeto.x = Math.floor(Math.random() * 720);
-	mascotaJugadorObjeto.y = Math.floor(Math.random() * 520);
+
+	// SOLUCIÓN: Añadimos manualmente la propiedad mapaFoto, que es un objeto Imagen.
+	// Esto es necesario porque el objeto viene de un array y no de una clase constructora.
+	mascotaJugadorObjeto.mapaFoto = new Image();
+	mascotaJugadorObjeto.mapaFoto.src = mascotaJugadorObjeto.foto;
+
+	// --- CAMBIO CLAVE: Generamos una posición que no colisione con otros ---
+	const posicionInicial = generarPosicionSinColision();
+	mascotaJugadorObjeto.x = posicionInicial.x;
+	mascotaJugadorObjeto.y = posicionInicial.y;
 
 	seleccionarMokepon(mascotaJugadorObjeto);
 
@@ -34,12 +45,12 @@ function iniciarMapa() {
 	mapa.height = 600;
 	mapaBackground.src = "https://i.ibb.co/Q7Bw5zLR/mokemap.png";
 
-	// Ya no se crea un enemigo aleatorio aquí.
-	intervalo = setInterval(pintarCanvas, 50);
+	intervalo = setInterval(pintarCanvas, 50); // 50ms = 20 FPS
 
 	window.addEventListener("keydown", sePresionoUnaTecla);
 	window.addEventListener("keyup", detenerMovimiento);
 
+	// Event listeners para botones en pantalla
 	const botonArriba = document.getElementById("mover-arriba");
 	const botonAbajo = document.getElementById("mover-abajo");
 	const botonIzquierda = document.getElementById("mover-izquierda");
@@ -56,42 +67,44 @@ function iniciarMapa() {
 	botonDerecha.addEventListener("mouseup", detenerMovimiento);
 }
 
-// NUEVA FUNCIÓN PARA DIBUJAR A LOS ENEMIGOS
-function dibujarEnemigos(enemigos) {
-	enemigos.forEach((enemigo) => {
-		// Creamos un objeto Mokepon en el cliente para manejar la imagen
-		let enemigoMokepon = new Mokepon(
-			enemigo.mokepon.nombre,
-			enemigo.mokepon.id,
-			enemigo.mokepon.foto,
-			enemigo.mokepon.tipo
-		);
-		enemigoMokepon.x = enemigo.x;
-		enemigoMokepon.y = enemigo.y;
+// --- FUNCIÓN NUEVA: ACTUALIZA EL ESTADO DE LOS ENEMIGOS ---
+function actualizarEnemigos(enemigosDelServidor) {
+	enemigosDelServidor.forEach((enemigoServidor) => {
+		if (!enemigoServidor.mokepon) return;
 
-		// Dibujamos al enemigo en el canvas
-		lienzo.drawImage(
-			enemigoMokepon.mapaFoto,
-			enemigoMokepon.x,
-			enemigoMokepon.y,
-			enemigoMokepon.ancho,
-			enemigoMokepon.alto
-		);
+		const enemigoExistente = enemigos.find((e) => e.id === enemigoServidor.id);
 
-		// Revisamos la colisión con este enemigo específico
-		revisarColision(enemigoMokepon);
+		if (enemigoExistente) {
+			enemigoExistente.x = enemigoServidor.x;
+			enemigoExistente.y = enemigoServidor.y;
+		} else {
+			// Asumimos que la clase Mokepon existe en otro archivo y que
+			// crea las propiedades necesarias (nombre, id, foto, tipo, mapaFoto, etc.)
+			const nuevoEnemigo = new Mokepon(
+				enemigoServidor.mokepon.nombre,
+				enemigoServidor.mokepon.id,
+				enemigoServidor.mokepon.foto,
+				enemigoServidor.mokepon.tipo
+			);
+			nuevoEnemigo.id = enemigoServidor.id;
+			nuevoEnemigo.x = enemigoServidor.x;
+			nuevoEnemigo.y = enemigoServidor.y;
+
+			enemigos.push(nuevoEnemigo);
+		}
 	});
 }
 
-// Pinta el estado actual del canvas en cada fotograma
+// --- FUNCIÓN DE RENDERIZADO PRINCIPAL ---
 function pintarCanvas() {
 	mascotaJugadorObjeto.x += mascotaJugadorObjeto.velocidadX;
 	mascotaJugadorObjeto.y += mascotaJugadorObjeto.velocidadY;
 
-	lienzo.clearRect(0, 0, mapa.width, mapa.height); // Limpiamos el lienzo
-	lienzo.drawImage(mapaBackground, 0, 0, mapa.width, mapa.height); // Dibujamos el fondo
+	lienzo.clearRect(0, 0, mapa.width, mapa.height);
+	lienzo.drawImage(mapaBackground, 0, 0, mapa.width, mapa.height);
 
-	// Dibujamos a nuestro propio mokepon
+	// SOLUCIÓN: Reemplazamos el llamado al método inexistente .pintarMokepon()
+	// con la lógica de dibujado directo en el canvas.
 	lienzo.drawImage(
 		mascotaJugadorObjeto.mapaFoto,
 		mascotaJugadorObjeto.x,
@@ -100,44 +113,97 @@ function pintarCanvas() {
 		mascotaJugadorObjeto.alto
 	);
 
-	// Enviamos nuestra posición y el backend nos devolverá los enemigos
 	enviarPosicion(mascotaJugadorObjeto.x, mascotaJugadorObjeto.y);
+
+	enemigos.forEach((enemigo) => {
+		// SOLUCIÓN: También usamos la lógica de dibujado directo aquí
+		// para mantener la consistencia y robustez del código.
+		lienzo.drawImage(
+			enemigo.mapaFoto,
+			enemigo.x,
+			enemigo.y,
+			enemigo.ancho,
+			enemigo.alto
+		);
+		revisarColision(enemigo);
+	});
 }
 
-// FUNCIÓN DE COLISIÓN MODIFICADA
+// --- FUNCIONES DE COLISIÓN Y POSICIONAMIENTO ---
+
+/**
+ * Genera coordenadas (x, y) aleatorias que no colisionan con ningún enemigo existente.
+ * @returns {{x: number, y: number}} - Un objeto con las coordenadas seguras.
+ */
+function generarPosicionSinColision() {
+	let nuevaPosicion;
+	let hayColision;
+
+	do {
+		hayColision = false;
+		const x = Math.floor(
+			Math.random() * (mapa.width - mascotaJugadorObjeto.ancho)
+		);
+		const y = Math.floor(
+			Math.random() * (mapa.height - mascotaJugadorObjeto.alto)
+		);
+
+		nuevaPosicion = { x, y };
+
+		// Creamos un objeto temporal para la verificación de colisión
+		const jugadorTemporal = {
+			...mascotaJugadorObjeto,
+			...nuevaPosicion,
+		};
+
+		for (const enemigo of enemigos) {
+			if (verificarColision(jugadorTemporal, enemigo)) {
+				hayColision = true;
+				break; // Si hay colisión, salimos del bucle for y probamos nuevas coordenadas.
+			}
+		}
+	} while (hayColision);
+
+	return nuevaPosicion;
+}
+
+/**
+ * Verifica si hay una colisión entre dos objetos (mokepones).
+ * @param {Mokepon} objetoA - El primer mokepon.
+ * @param {Mokepon} objetoB - El segundo mokepon.
+ * @returns {boolean} - Devuelve true si hay colisión, de lo contrario false.
+ */
+function verificarColision(objetoA, objetoB) {
+	if (!objetoA || !objetoB) return false;
+
+	const arribaA = objetoA.y;
+	const abajoA = objetoA.y + objetoA.alto;
+	const derechaA = objetoA.x + objetoA.ancho;
+	const izquierdaA = objetoA.x;
+
+	const arribaB = objetoB.y;
+	const abajoB = objetoB.y + objetoB.alto;
+	const derechaB = objetoB.x + objetoB.ancho;
+	const izquierdaB = objetoB.x;
+
+	return !(
+		abajoA < arribaB ||
+		arribaA > abajoB ||
+		derechaA < izquierdaB ||
+		izquierdaA > derechaB
+	);
+}
+
 function revisarColision(enemigo) {
-	if (!enemigo) return; // Si no hay enemigo, no hacemos nada
-
-	const arribaEnemigo = enemigo.y;
-	const abajoEnemigo = enemigo.y + enemigo.alto;
-	const derechaEnemigo = enemigo.x + enemigo.ancho;
-	const izquierdaEnemigo = enemigo.x;
-
-	const arribaMascota = mascotaJugadorObjeto.y;
-	const abajoMascota = mascotaJugadorObjeto.y + mascotaJugadorObjeto.alto;
-	const derechaMascota = mascotaJugadorObjeto.x + mascotaJugadorObjeto.ancho;
-	const izquierdaMascota = mascotaJugadorObjeto.x;
-
-	if (
-		abajoMascota < arribaEnemigo ||
-		arribaMascota > abajoEnemigo ||
-		derechaMascota < izquierdaEnemigo ||
-		izquierdaMascota > derechaEnemigo
-	) {
-		return;
+	if (verificarColision(mascotaJugadorObjeto, enemigo)) {
+		// Si hay colisión:
+		detenerMovimiento();
+		clearInterval(intervalo);
+		mascotaEnemigoObjeto = enemigo;
+		document.getElementById("ver-mapa").style.display = "none";
+		document.getElementById("seleccionar-ataque").style.display = "flex";
+		iniciarBatalla();
 	}
-
-	// Si hay colisión:
-	detenerMovimiento();
-	clearInterval(intervalo);
-
-	// Guardamos el enemigo con el que colisionamos para la batalla
-	mascotaEnemigoObjeto = enemigo;
-
-	document.getElementById("ver-mapa").style.display = "none";
-	document.getElementById("seleccionar-ataque").style.display = "flex";
-
-	iniciarBatalla();
 }
 
 // --- FUNCIONES DE MOVIMIENTO (sin cambios) ---

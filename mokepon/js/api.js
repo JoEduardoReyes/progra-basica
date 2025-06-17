@@ -1,10 +1,15 @@
+// Archivo: public/js/api.js
+
+/**
+ * Envía el mokepon seleccionado por el jugador al servidor.
+ * @param {Mokepon} mascotaJugadorObjeto - El objeto completo del mokepon del jugador.
+ */
 function seleccionarMokepon(mascotaJugadorObjeto) {
 	fetch(`http://localhost:8080/mokepon/${jugadorId}`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		// Enviamos el objeto completo del mokepon
 		body: JSON.stringify({ mokepon: mascotaJugadorObjeto }),
 	}).then((res) => {
 		if (res.ok) {
@@ -14,11 +19,16 @@ function seleccionarMokepon(mascotaJugadorObjeto) {
 		}
 	});
 }
+
+/**
+ * Se une a la partida, obteniendo un ID de jugador del servidor.
+ */
 function unirseAlJuego() {
 	fetch("http://localhost:8080/unirse").then(function (res) {
 		if (res.ok) {
 			res.text().then(function (id) {
 				console.log("ID del jugador:", id);
+				// Asigna el ID a la variable global para futuras peticiones
 				jugadorId = id;
 			});
 		} else {
@@ -27,6 +37,11 @@ function unirseAlJuego() {
 	});
 }
 
+/**
+ * Envía la posición actual del jugador al servidor y recibe la de los enemigos.
+ * @param {number} x - La coordenada X del jugador.
+ * @param {number} y - La coordenada Y del jugador.
+ */
 function enviarPosicion(x, y) {
 	fetch(`http://localhost:8080/mokepon/${jugadorId}/posicion`, {
 		method: "POST",
@@ -38,7 +53,12 @@ function enviarPosicion(x, y) {
 		.then((res) => {
 			if (res.ok) {
 				res.json().then(({ enemigos }) => {
-					dibujarEnemigos(enemigos);
+					// --- CAMBIO CLAVE ---
+					// En lugar de dibujar los enemigos directamente desde aquí,
+					// llamamos a una función que actualiza nuestro estado local.
+					// El dibujado se hará en el bucle principal de 'pintarCanvas'.
+					// Esta función 'actualizarEnemigos' está definida en canvas.js
+					actualizarEnemigos(enemigos);
 				});
 			}
 		})
